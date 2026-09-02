@@ -3,30 +3,37 @@
 // app.js
 // ============================================
 
+
 // ============================================
-// Firebase App
+// Firebase
 // ============================================
 
 import {
-initializeApp
+    initializeApp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 
-import {
-getAuth,
-GoogleAuthProvider,
-signInWithPopup,
-signOut,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-query,
-where
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    updateDoc,
+    deleteDoc,
+    doc
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
 
 // ============================================
 // Firebase Configuration
@@ -34,44 +41,48 @@ where
 
 const firebaseConfig = {
 
-apiKey:
-    "AIzaSyDdQSIn79XHyD1rZy4sEatETdnbBlJBCKc",
+    apiKey:
+        "AIzaSyDdQSIn79XHyD1rZy4sEatETdnbBlJBCKc",
 
-authDomain:
-    "tele-arrangement.firebaseapp.com",
+    authDomain:
+        "tele-arrangement.firebaseapp.com",
 
-projectId:
-    "tele-arrangement",
+    projectId:
+        "tele-arrangement",
 
-storageBucket:
-    "tele-arrangement.firebasestorage.app",
+    storageBucket:
+        "tele-arrangement.firebasestorage.app",
 
-messagingSenderId:
-    "939924244118",
+    messagingSenderId:
+        "939924244118",
 
-appId:
-    "1:939924244118:web:dcc613a89bb158348f24b7"
-
+    appId:
+        "1:939924244118:web:dcc613a89bb158348f24b7"
 };
 
+
 // ============================================
-// Initialize Firebase
+// Initialize
 // ============================================
 
 const firebaseApp =
-initializeApp(firebaseConfig);
+    initializeApp(firebaseConfig);
+
 
 const auth =
-getAuth(firebaseApp);
+    getAuth(firebaseApp);
+
 
 const db =
-getFirestore(firebaseApp);
+    getFirestore(firebaseApp);
+
 
 const googleProvider =
-new GoogleAuthProvider();
+    new GoogleAuthProvider();
+
 
 // ============================================
-// Global State
+// State
 // ============================================
 
 let currentUser = null;
@@ -80,29 +91,35 @@ let currentFolderId = null;
 
 let currentFolderName = "الرئيسية";
 
+let currentFolderPath = [];
+
+let foldersCache = [];
+
+
 // ============================================
-// Application Root
+// Root
 // ============================================
 
 const appContainer =
-document.getElementById("app");
+    document.getElementById("app");
+
 
 // ============================================
-// Material Icon Helper
+// Icon
 // ============================================
 
 function icon(
-name,
-className = ""
+    name,
+    className = ""
 ) {
 
-return `
-    <span class="material-symbols-rounded ${className}">
-        ${name}
-    </span>
-`;
-
+    return `
+        <span class="material-symbols-rounded ${className}">
+            ${name}
+        </span>
+    `;
 }
+
 
 // ============================================
 // Login Screen
@@ -110,138 +127,101 @@ return `
 
 function showLoginScreen() {
 
-if (!appContainer) {
-    return;
-}
+    appContainer.innerHTML = `
 
+        <div class="login-container">
 
-appContainer.innerHTML = `
+            <div class="login-box">
 
-    <div class="login-container">
+                <div class="login-logo">
+                    ${icon(
+                        "cloud",
+                        "login-cloud-icon"
+                    )}
+                </div>
 
-        <div class="login-box">
+                <h1>
+                    My Cloud Storage
+                </h1>
 
-            <div class="login-logo">
+                <p>
+                    التخزين السحابي الخاص بك
+                </p>
 
-                ${icon("cloud", "login-cloud-icon")}
+                <button
+                    id="googleLoginButton"
+                    class="google-login-button"
+                >
+
+                    ${icon("account_circle")}
+
+                    <span>
+                        تسجيل الدخول باستخدام Google
+                    </span>
+
+                </button>
 
             </div>
 
-
-            <h1>
-                My Cloud Storage
-            </h1>
-
-
-            <p>
-                التخزين السحابي الخاص بك
-            </p>
-
-
-            <button
-                id="googleLoginButton"
-                class="google-login-button"
-            >
-
-                ${icon("account_circle")}
-
-                <span>
-                    تسجيل الدخول باستخدام Google
-                </span>
-
-            </button>
-
         </div>
-
-    </div>
-`;
+    `;
 
 
-const loginButton =
-    document.getElementById(
-        "googleLoginButton"
-    );
+    const button =
+        document.getElementById(
+            "googleLoginButton"
+        );
 
 
-if (loginButton) {
-
-    loginButton.addEventListener(
+    button.addEventListener(
         "click",
         loginWithGoogle
     );
-
 }
 
-}
 
 // ============================================
-// Google Login
+// Login
 // ============================================
 
 async function loginWithGoogle() {
 
-const button =
-    document.getElementById(
-        "googleLoginButton"
-    );
+    const button =
+        document.getElementById(
+            "googleLoginButton"
+        );
 
 
-try {
-
-    if (button) {
+    try {
 
         button.disabled = true;
 
         button.innerHTML = `
 
-            ${icon("progress_activity", "loading-icon")}
+            ${icon(
+                "progress_activity",
+                "loading-icon"
+            )}
 
             <span>
                 جاري تسجيل الدخول...
             </span>
-
         `;
-    }
 
 
-    const result =
         await signInWithPopup(
             auth,
             googleProvider
         );
 
 
-    const user =
-        result.user;
+    } catch (error) {
 
+        console.error(
+            "Login error:",
+            error
+        );
 
-    console.log(
-        "Logged in:",
-        user.displayName
-    );
-
-
-    console.log(
-        "Email:",
-        user.email
-    );
-
-
-    console.log(
-        "UID:",
-        user.uid
-    );
-
-
-} catch (error) {
-
-    console.error(
-        "Login error:",
-        error
-    );
-
-
-    if (button) {
 
         button.disabled = false;
 
@@ -252,18 +232,16 @@ try {
             <span>
                 تسجيل الدخول باستخدام Google
             </span>
-
         `;
+
+
+        alert(
+            "حدث خطأ أثناء تسجيل الدخول:\n\n" +
+            error.message
+        );
     }
-
-
-    alert(
-        "حدث خطأ أثناء تسجيل الدخول:\n\n" +
-        error.message
-    );
 }
 
-}
 
 // ============================================
 // Logout
@@ -271,25 +249,24 @@ try {
 
 async function logout() {
 
-try {
+    try {
 
-    await signOut(auth);
+        await signOut(auth);
 
-} catch (error) {
+    } catch (error) {
 
-    console.error(
-        "Logout error:",
-        error
-    );
+        console.error(
+            "Logout error:",
+            error
+        );
 
-
-    alert(
-        "حدث خطأ أثناء تسجيل الخروج:\n\n" +
-        error.message
-    );
+        alert(
+            "حدث خطأ أثناء تسجيل الخروج:\n\n" +
+            error.message
+        );
+    }
 }
 
-}
 
 // ============================================
 // Main Application
@@ -297,307 +274,330 @@ try {
 
 function showMainApp() {
 
-if (!appContainer) {
-    return;
-}
+    const displayName =
+        currentUser?.displayName ||
+        "المستخدم";
 
 
-const displayName =
-    currentUser?.displayName ||
-    "المستخدم";
+    const email =
+        currentUser?.email ||
+        "";
 
 
-const email =
-    currentUser?.email ||
-    "";
+    appContainer.innerHTML = `
 
+        <div class="cloud-app">
 
-appContainer.innerHTML = `
+            <!-- Header -->
 
-    <div class="cloud-app">
+            <header class="app-header">
 
-        <!-- ============================= -->
-        <!-- Header -->
-        <!-- ============================= -->
+                <div class="brand">
 
-        <header class="app-header">
-
-            <div class="brand">
-
-                <div class="brand-icon">
-
-                    ${icon("cloud")}
-
-                </div>
-
-
-                <div>
-
-                    <h1>
-                        My Cloud Storage
-                    </h1>
-
-                    <span>
-                        التخزين السحابي
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="user-area">
-
-                <div class="user-info">
-
-                    <div class="user-avatar">
-
-                        ${
-                            currentUser?.photoURL
-                                ? `
-                                    <img
-                                        src="${escapeHtml(
-                                            currentUser.photoURL
-                                        )}"
-                                        alt="User"
-                                    >
-                                `
-                                : icon("person")
-                        }
-
+                    <div class="brand-icon">
+                        ${icon("cloud")}
                     </div>
 
+                    <div>
 
-                    <div class="user-text">
+                        <h1>
+                            My Cloud Storage
+                        </h1>
 
-                        <strong>
-                            ${escapeHtml(
-                                displayName
-                            )}
-                        </strong>
-
-                        <small>
-                            ${escapeHtml(
-                                email
-                            )}
-                        </small>
+                        <span>
+                            التخزين السحابي
+                        </span>
 
                     </div>
 
                 </div>
 
 
-                <button
-                    id="logoutButton"
-                    class="icon-button"
-                    title="تسجيل الخروج"
-                >
+                <div class="user-area">
 
-                    ${icon("logout")}
+                    <div class="user-info">
 
-                </button>
+                        <div class="user-avatar">
+
+                            ${
+                                currentUser?.photoURL
+                                    ? `
+                                        <img
+                                            src="${escapeHtml(
+                                                currentUser.photoURL
+                                            )}"
+                                            alt="User"
+                                        >
+                                    `
+                                    : icon("person")
+                            }
+
+                        </div>
+
+                        <div class="user-text">
+
+                            <strong>
+                                ${escapeHtml(
+                                    displayName
+                                )}
+                            </strong>
+
+                            <small>
+                                ${escapeHtml(
+                                    email
+                                )}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        id="logoutButton"
+                        class="icon-button"
+                        title="تسجيل الخروج"
+                    >
+                        ${icon("logout")}
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- Toolbar -->
+
+            <div class="toolbar">
+
+                <div class="toolbar-main">
+
+                    <button
+                        id="homeButton"
+                        class="toolbar-button secondary"
+                    >
+
+                        ${icon("home")}
+
+                        <span>
+                            الرئيسية
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        id="createFolderButton"
+                        class="toolbar-button primary"
+                    >
+
+                        ${icon("create_new_folder")}
+
+                        <span>
+                            مجلد جديد
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        id="uploadButton"
+                        class="toolbar-button success"
+                    >
+
+                        ${icon("upload_file")}
+
+                        <span>
+                            رفع ملف
+                        </span>
+
+                    </button>
+
+
+                    <input
+                        type="file"
+                        id="fileInput"
+                        hidden
+                    >
+
+                </div>
+
+
+                <div class="search-box">
+
+                    ${icon("search")}
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="البحث في الملفات..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        id="clearSearchButton"
+                        class="clear-search"
+                        title="مسح البحث"
+                        style="display:none;"
+                    >
+
+                        ${icon("close")}
+
+                    </button>
+
+                </div>
 
             </div>
 
-        </header>
+
+            <!-- Breadcrumb -->
+
+            <div
+                id="breadcrumb"
+                class="breadcrumb"
+            ></div>
 
 
-        <!-- ============================= -->
-        <!-- Toolbar -->
-        <!-- ============================= -->
+            <!-- Content -->
 
-        <div class="toolbar">
+            <main
+                id="fileContainer"
+                class="file-container"
+            >
 
-            <div class="toolbar-main">
+                <div class="loading-container">
 
-                <button
-                    id="homeButton"
-                    class="toolbar-button secondary"
-                >
-
-                    ${icon("home")}
-
-                    <span>
-                        الرئيسية
-                    </span>
-
-                </button>
-
-
-                <button
-                    id="createFolderButton"
-                    class="toolbar-button primary"
-                >
-
-                    ${icon("create_new_folder")}
+                    ${icon(
+                        "progress_activity",
+                        "loading-icon"
+                    )}
 
                     <span>
-                        مجلد جديد
+                        جاري تحميل الملفات...
                     </span>
 
-                </button>
+                </div>
 
-
-                <button
-                    id="uploadButton"
-                    class="toolbar-button success"
-                >
-
-                    ${icon("upload_file")}
-
-                    <span>
-                        رفع ملف
-                    </span>
-
-                </button>
-
-
-                <input
-                    type="file"
-                    id="fileInput"
-                    hidden
-                >
-
-            </div>
-
-
-            <div class="search-box">
-
-                ${icon("search")}
-
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="البحث في الملفات..."
-                    autocomplete="off"
-                >
-
-                <button
-                    id="clearSearchButton"
-                    class="clear-search"
-                    title="مسح البحث"
-                    style="display:none;"
-                >
-
-                    ${icon("close")}
-
-                </button>
-
-            </div>
+            </main>
 
         </div>
 
 
-        <!-- ============================= -->
-        <!-- Breadcrumb -->
-        <!-- ============================= -->
+        <!-- File Menu -->
 
         <div
-            id="breadcrumb"
-            class="breadcrumb"
+            id="fileMenu"
+            class="file-menu"
         ></div>
 
 
-        <!-- ============================= -->
-        <!-- Content -->
-        <!-- ============================= -->
+        <!-- Move Modal -->
 
-        <main
-            id="fileContainer"
-            class="file-container"
+        <div
+            id="moveModal"
+            class="modal-overlay"
         >
 
-            <div class="loading-container">
+            <div class="modal-box">
 
-                ${icon(
-                    "progress_activity",
-                    "loading-icon"
-                )}
+                <div class="modal-header">
 
-                <span>
-                    جاري تحميل الملفات...
-                </span>
+                    <h3>
+                        نقل الملف
+                    </h3>
+
+                    <button
+                        id="closeMoveModal"
+                        class="modal-close"
+                    >
+                        ${icon("close")}
+                    </button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+                    <p class="modal-description">
+                        اختر المجلد الذي تريد نقل الملف إليه:
+                    </p>
+
+                    <select
+                        id="moveFolderSelect"
+                        class="folder-select"
+                    ></select>
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        id="cancelMoveButton"
+                        class="modal-button secondary"
+                    >
+                        إلغاء
+                    </button>
+
+                    <button
+                        id="confirmMoveButton"
+                        class="modal-button primary"
+                    >
+                        ${icon("drive_file_move")}
+                        نقل
+                    </button>
+
+                </div>
 
             </div>
 
-        </main>
-
-    </div>
-`;
+        </div>
+    `;
 
 
-// ========================================
-// Events
-// ========================================
+    // ========================================
+    // Events
+    // ========================================
 
-const logoutButton =
-    document.getElementById(
-        "logoutButton"
-    );
-
-
-if (logoutButton) {
-
-    logoutButton.addEventListener(
-        "click",
-        logout
-    );
-
-}
+    document
+        .getElementById("logoutButton")
+        .addEventListener(
+            "click",
+            logout
+        );
 
 
-const homeButton =
-    document.getElementById(
-        "homeButton"
-    );
+    document
+        .getElementById("homeButton")
+        .addEventListener(
+            "click",
+            goHome
+        );
 
 
-if (homeButton) {
-
-    homeButton.addEventListener(
-        "click",
-        goHome
-    );
-
-}
+    document
+        .getElementById("createFolderButton")
+        .addEventListener(
+            "click",
+            createFolder
+        );
 
 
-const createFolderButton =
-    document.getElementById(
-        "createFolderButton"
-    );
+    // ========================================
+    // Upload
+    // ========================================
+
+    const uploadButton =
+        document.getElementById(
+            "uploadButton"
+        );
 
 
-if (createFolderButton) {
+    const fileInput =
+        document.getElementById(
+            "fileInput"
+        );
 
-    createFolderButton.addEventListener(
-        "click",
-        createFolder
-    );
-
-}
-
-
-// ========================================
-// Upload
-// ========================================
-
-const uploadButton =
-    document.getElementById(
-        "uploadButton"
-    );
-
-
-const fileInput =
-    document.getElementById(
-        "fileInput"
-    );
-
-
-if (
-    uploadButton &&
-    fileInput
-) {
 
     uploadButton.addEventListener(
         "click",
@@ -612,9 +612,7 @@ if (
                 return;
             }
 
-
             fileInput.click();
-
         }
     );
 
@@ -638,30 +636,25 @@ if (
 
 
             fileInput.value = "";
-
         }
     );
 
-}
+
+    // ========================================
+    // Search
+    // ========================================
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
 
 
-// ========================================
-// Search
-// ========================================
+    const clearSearchButton =
+        document.getElementById(
+            "clearSearchButton"
+        );
 
-const searchInput =
-    document.getElementById(
-        "searchInput"
-    );
-
-
-const clearSearchButton =
-    document.getElementById(
-        "clearSearchButton"
-    );
-
-
-if (searchInput) {
 
     searchInput.addEventListener(
         "input",
@@ -673,14 +666,10 @@ if (searchInput) {
                     .toLowerCase();
 
 
-            if (clearSearchButton) {
-
-                clearSearchButton.style.display =
-                    text
-                        ? "flex"
-                        : "none";
-
-            }
+            clearSearchButton.style.display =
+                text
+                    ? "flex"
+                    : "none";
 
 
             if (!text) {
@@ -694,14 +683,9 @@ if (searchInput) {
             await searchFiles(
                 text
             );
-
         }
     );
 
-}
-
-
-if (clearSearchButton) {
 
     clearSearchButton.addEventListener(
         "click",
@@ -715,22 +699,86 @@ if (clearSearchButton) {
             await refreshCurrentFolder();
 
             searchInput.focus();
-
         }
     );
 
+
+    // ========================================
+    // Modal Events
+    // ========================================
+
+    document
+        .getElementById("closeMoveModal")
+        .addEventListener(
+            "click",
+            closeMoveModal
+        );
+
+
+    document
+        .getElementById("cancelMoveButton")
+        .addEventListener(
+            "click",
+            closeMoveModal
+        );
+
+
+    document
+        .getElementById("confirmMoveButton")
+        .addEventListener(
+            "click",
+            confirmMoveFile
+        );
+
+
+    // Close menu when clicking elsewhere
+
+    document.addEventListener(
+        "click",
+        handleDocumentClick
+    );
+
+
+    updateBreadcrumb();
+
+    refreshCurrentFolder();
 }
 
 
-// ========================================
-// Initial Load
-// ========================================
+// ============================================
+// Document Click
+// ============================================
 
-updateBreadcrumb();
+function handleDocumentClick(
+    event
+) {
 
-refreshCurrentFolder();
+    const menu =
+        document.getElementById(
+            "fileMenu"
+        );
 
+
+    if (!menu) {
+        return;
+    }
+
+
+    if (
+        !event.target.closest(
+            ".file-menu"
+        ) &&
+        !event.target.closest(
+            ".file-menu-button"
+        )
+    ) {
+
+        menu.classList.remove(
+            "visible"
+        );
+    }
 }
+
 
 // ============================================
 // Go Home
@@ -738,53 +786,350 @@ refreshCurrentFolder();
 
 async function goHome() {
 
-currentFolderId = null;
+    currentFolderId = null;
 
-currentFolderName =
-    "الرئيسية";
+    currentFolderName =
+        "الرئيسية";
 
-
-const searchInput =
-    document.getElementById(
-        "searchInput"
-    );
+    currentFolderPath = [];
 
 
-const clearButton =
-    document.getElementById(
-        "clearSearchButton"
-    );
+    clearSearch();
 
 
-if (searchInput) {
-    searchInput.value = "";
+    updateBreadcrumb();
+
+    await refreshCurrentFolder();
 }
 
-
-if (clearButton) {
-    clearButton.style.display = "none";
-}
-
-
-updateBreadcrumb();
-
-await refreshCurrentFolder();
-
-}
 
 // ============================================
-// Refresh Folder
+// Clear Search
+// ============================================
+
+function clearSearch() {
+
+    const input =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    const clear =
+        document.getElementById(
+            "clearSearchButton"
+        );
+
+
+    if (input) {
+        input.value = "";
+    }
+
+
+    if (clear) {
+        clear.style.display = "none";
+    }
+}
+
+
+// ============================================
+// Refresh
 // ============================================
 
 async function refreshCurrentFolder() {
 
-await loadFolders();
+    await loadAllFolders();
 
-await loadFiles();
+    await loadCurrentFolderItems();
 
-updateBreadcrumb();
-
+    updateBreadcrumb();
 }
+
+
+// ============================================
+// Load All Folders
+// ============================================
+
+async function loadAllFolders() {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    try {
+
+        const foldersQuery =
+            query(
+                collection(
+                    db,
+                    "folders"
+                ),
+
+                where(
+                    "ownerId",
+                    "==",
+                    currentUser.uid
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                foldersQuery
+            );
+
+
+        foldersCache = [];
+
+
+        snapshot.forEach(
+            folderDoc => {
+
+                foldersCache.push({
+
+                    id:
+                        folderDoc.id,
+
+                    ...folderDoc.data()
+
+                });
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Load folders error:",
+            error
+        );
+    }
+}
+
+
+// ============================================
+// Load Current Folder Items
+// ============================================
+
+async function loadCurrentFolderItems() {
+
+    const container =
+        document.getElementById(
+            "fileContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="loading-container">
+
+            ${icon(
+                "progress_activity",
+                "loading-icon"
+            )}
+
+            <span>
+                جاري تحميل الملفات...
+            </span>
+
+        </div>
+    `;
+
+
+    try {
+
+        const parentId =
+            currentFolderId || null;
+
+
+        // ====================================
+        // Folders
+        // ====================================
+
+        const folders =
+            foldersCache
+                .filter(
+                    folder =>
+                        (folder.parentId || null) ===
+                        parentId
+                )
+                .sort(
+                    sortByDate
+                );
+
+
+        // ====================================
+        // Files
+        // ====================================
+
+        const filesQuery =
+            query(
+                collection(
+                    db,
+                    "files"
+                ),
+
+                where(
+                    "ownerId",
+                    "==",
+                    currentUser.uid
+                ),
+
+                where(
+                    "folderId",
+                    "==",
+                    parentId
+                ),
+
+                where(
+                    "deleted",
+                    "==",
+                    false
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                filesQuery
+            );
+
+
+        const files = [];
+
+
+        snapshot.forEach(
+            fileDoc => {
+
+                files.push({
+
+                    id:
+                        fileDoc.id,
+
+                    ...fileDoc.data()
+
+                });
+
+            }
+        );
+
+
+        files.sort(
+            sortByDate
+        );
+
+
+        container.innerHTML = "";
+
+
+        // ====================================
+        // Render folders
+        // ====================================
+
+        folders.forEach(
+            folder => {
+
+                container.appendChild(
+                    createFolderElement(
+                        folder
+                    )
+                );
+
+            }
+        );
+
+
+        // ====================================
+        // Render files
+        // ====================================
+
+        files.forEach(
+            file => {
+
+                container.appendChild(
+                    createFileElement(
+                        file
+                    )
+                );
+
+            }
+        );
+
+
+        // ====================================
+        // Empty
+        // ====================================
+
+        if (
+            folders.length === 0 &&
+            files.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+
+                        ${icon("cloud_off")}
+
+                    </div>
+
+                    <h3>
+                        المجلد فارغ
+                    </h3>
+
+                    <p>
+                        ابدأ برفع ملف أو إنشاء مجلد جديد.
+                    </p>
+
+                </div>
+            `;
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Load items error:",
+            error
+        );
+
+
+        showError(
+            "حدث خطأ أثناء تحميل الملفات",
+            error
+        );
+    }
+}
+
+
+// ============================================
+// Sort
+// ============================================
+
+function sortByDate(
+    a,
+    b
+) {
+
+    return (
+        getTimestamp(
+            b.createdAt
+        ) -
+        getTimestamp(
+            a.createdAt
+        )
+    );
+}
+
 
 // ============================================
 // Create Folder
@@ -792,730 +1137,1227 @@ updateBreadcrumb();
 
 async function createFolder() {
 
-if (!currentUser) {
+    if (!currentUser) {
 
-    alert(
-        "يجب تسجيل الدخول أولاً"
-    );
+        alert(
+            "يجب تسجيل الدخول أولاً"
+        );
 
-    return;
-}
-
-
-const folderName =
-    prompt(
-        "اكتب اسم المجلد:"
-    );
+        return;
+    }
 
 
-if (folderName === null) {
-    return;
-}
+    const name =
+        prompt(
+            "اكتب اسم المجلد:"
+        );
 
 
-const cleanName =
-    folderName.trim();
+    if (name === null) {
+        return;
+    }
 
 
-if (!cleanName) {
-
-    alert(
-        "اسم المجلد لا يمكن أن يكون فارغًا."
-    );
-
-    return;
-}
+    const cleanName =
+        name.trim();
 
 
-try {
+    if (!cleanName) {
 
-    await addDoc(
-        collection(
-            db,
-            "folders"
-        ),
-        {
+        alert(
+            "اسم المجلد لا يمكن أن يكون فارغًا."
+        );
 
-            name:
-                cleanName,
-
-            parentId:
-                currentFolderId || null,
-
-            ownerId:
-                currentUser.uid,
-
-            createdAt:
-                new Date()
-
-        }
-    );
+        return;
+    }
 
 
-    await loadFolders();
+    try {
 
-
-} catch (error) {
-
-    console.error(
-        "Create folder error:",
-        error
-    );
-
-
-    alert(
-        "حدث خطأ أثناء إنشاء المجلد:\n\n" +
-        error.message
-    );
-}
-
-}
-
-// ============================================
-// Load Folders
-// ============================================
-
-async function loadFolders() {
-
-if (!currentUser) {
-    return;
-}
-
-
-const container =
-    document.getElementById(
-        "fileContainer"
-    );
-
-
-if (!container) {
-    return;
-}
-
-
-try {
-
-    const foldersQuery =
-        query(
+        await addDoc(
             collection(
                 db,
                 "folders"
             ),
+            {
 
-            where(
-                "ownerId",
-                "==",
-                currentUser.uid
-            ),
+                name:
+                    cleanName,
 
-            where(
-                "parentId",
-                "==",
-                currentFolderId || null
-            )
+                parentId:
+                    currentFolderId ||
+                    null,
+
+                ownerId:
+                    currentUser.uid,
+
+                createdAt:
+                    new Date()
+
+            }
         );
 
-
-    const snapshot =
-        await getDocs(
-            foldersQuery
-        );
-
-
-    const folders = [];
-
-
-    snapshot.forEach(
-        docSnapshot => {
-
-            folders.push({
-                id:
-                    docSnapshot.id,
-
-                ...docSnapshot.data()
-            });
-
-        }
-    );
-
-
-    // Sort newest first
-
-    folders.sort(
-        (a, b) => {
-
-            const aTime =
-                getTimestamp(
-                    a.createdAt
-                );
-
-            const bTime =
-                getTimestamp(
-                    b.createdAt
-                );
-
-            return bTime - aTime;
-
-        }
-    );
-
-
-    // Remove old folders
-
-    const oldFolders =
-        container.querySelectorAll(
-            ".folder-item"
-        );
-
-
-    oldFolders.forEach(
-        item => item.remove()
-    );
-
-
-    // Render folders
-
-    folders.forEach(
-        folder => {
-
-            const element =
-                createFolderElement(
-                    folder
-                );
-
-
-            container.appendChild(
-                element
-            );
-
-        }
-    );
-
-
-} catch (error) {
-
-    console.error(
-        "Load folders error:",
-        error
-    );
-
-
-    showError(
-        "حدث خطأ أثناء تحميل المجلدات",
-        error
-    );
-}
-
-}
-
-// ============================================
-// Create Folder Element
-// ============================================
-
-function createFolderElement(
-folder
-) {
-
-const element =
-    document.createElement(
-        "div"
-    );
-
-
-element.className =
-    "folder-item";
-
-
-element.dataset.id =
-    folder.id;
-
-
-element.innerHTML = `
-
-    <div class="item-icon folder-icon">
-
-        ${icon("folder")}
-
-    </div>
-
-
-    <div class="item-name">
-
-        ${escapeHtml(
-            folder.name
-        )}
-
-    </div>
-
-
-    <div class="item-type">
-
-        مجلد
-
-    </div>
-
-`;
-
-
-// Double click to open
-
-element.addEventListener(
-    "dblclick",
-    async () => {
-
-        currentFolderId =
-            folder.id;
-
-        currentFolderName =
-            folder.name;
-
-
-        updateBreadcrumb();
 
         await refreshCurrentFolder();
 
+
+    } catch (error) {
+
+        console.error(
+            "Create folder error:",
+            error
+        );
+
+
+        alert(
+            "حدث خطأ أثناء إنشاء المجلد:\n\n" +
+            error.message
+        );
     }
-);
-
-
-return element;
-
 }
 
+
 // ============================================
-// Load Files
+// Folder Element
 // ============================================
 
-async function loadFiles(
-folderId = currentFolderId
+function createFolderElement(
+    folder
 ) {
 
-if (!currentUser) {
-    return;
-}
-
-
-const container =
-    document.getElementById(
-        "fileContainer"
-    );
-
-
-if (!container) {
-    return;
-}
-
-
-try {
-
-    const filesQuery =
-        query(
-            collection(
-                db,
-                "files"
-            ),
-
-            where(
-                "ownerId",
-                "==",
-                currentUser.uid
-            ),
-
-            where(
-                "folderId",
-                "==",
-                folderId || null
-            ),
-
-            where(
-                "deleted",
-                "==",
-                false
-            )
+    const element =
+        document.createElement(
+            "div"
         );
 
 
-    const snapshot =
-        await getDocs(
-            filesQuery
-        );
+    element.className =
+        "folder-item";
 
 
-    const files = [];
+    element.dataset.id =
+        folder.id;
 
 
-    snapshot.forEach(
-        docSnapshot => {
+    element.innerHTML = `
 
-            files.push({
-                id:
-                    docSnapshot.id,
+        <div class="item-icon folder-icon">
 
-                ...docSnapshot.data()
-            });
+            ${icon("folder")}
 
+        </div>
+
+
+        <div class="item-name">
+
+            ${escapeHtml(
+                folder.name
+            )}
+
+        </div>
+
+
+        <div class="item-type">
+
+            مجلد
+
+        </div>
+
+    `;
+
+
+    element.addEventListener(
+        "dblclick",
+        async () => {
+
+            currentFolderId =
+                folder.id;
+
+            currentFolderName =
+                folder.name;
+
+
+            currentFolderPath =
+                buildFolderPath(
+                    folder.id
+                );
+
+
+            clearSearch();
+
+            updateBreadcrumb();
+
+            await refreshCurrentFolder();
         }
     );
 
 
-    // Sort newest first
-
-    files.sort(
-        (a, b) => {
-
-            const aTime =
-                getTimestamp(
-                    a.createdAt
-                );
-
-            const bTime =
-                getTimestamp(
-                    b.createdAt
-                );
-
-            return bTime - aTime;
-
-        }
-    );
-
-
-    // Remove old files
-
-    const oldFiles =
-        container.querySelectorAll(
-            ".file-item"
-        );
-
-
-    oldFiles.forEach(
-        item => item.remove()
-    );
-
-
-    // Render files
-
-    files.forEach(
-        file => {
-
-            const element =
-                createFileElement(
-                    file
-                );
-
-
-            container.appendChild(
-                element
-            );
-
-        }
-    );
-
-
-    updateEmptyState();
-
-
-} catch (error) {
-
-    console.error(
-        "Load files error:",
-        error
-    );
-
-
-    showError(
-        "حدث خطأ أثناء تحميل الملفات",
-        error
-    );
+    return element;
 }
 
-}
 
 // ============================================
-// Create File Element
+// Build Folder Path
+// ============================================
+
+function buildFolderPath(
+    folderId
+) {
+
+    const path = [];
+
+    let current =
+        foldersCache.find(
+            folder =>
+                folder.id === folderId
+        );
+
+
+    while (current) {
+
+        path.unshift(
+            current
+        );
+
+
+        current =
+            foldersCache.find(
+                folder =>
+                    folder.id ===
+                    (current.parentId || null)
+            );
+    }
+
+
+    return path;
+}
+
+
+// ============================================
+// File Element
 // ============================================
 
 function createFileElement(
-file
+    file
 ) {
 
-const element =
-    document.createElement(
-        "div"
+    const element =
+        document.createElement(
+            "div"
+        );
+
+
+    element.className =
+        "file-item";
+
+
+    element.dataset.id =
+        file.id;
+
+
+    element.innerHTML = `
+
+        <div class="item-icon file-icon">
+
+            ${icon(
+                getFileIcon(
+                    file.mimeType,
+                    file.name
+                )
+            )}
+
+        </div>
+
+
+        <div class="item-name">
+
+            ${escapeHtml(
+                file.name
+            )}
+
+        </div>
+
+
+        <div class="item-bottom">
+
+            <div class="item-type">
+
+                ${formatFileSize(
+                    file.size
+                )}
+
+            </div>
+
+
+            <button
+                class="file-menu-button"
+                title="خيارات الملف"
+            >
+
+                ${icon("more_vert")}
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    const menuButton =
+        element.querySelector(
+            ".file-menu-button"
+        );
+
+
+    menuButton.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            showFileMenu(
+                file,
+                menuButton
+            );
+        }
     );
 
 
-element.className =
-    "file-item";
+    // Single click opens menu
+
+    element.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target.closest(
+                    ".file-menu-button"
+                )
+            ) {
+                return;
+            }
 
 
-element.dataset.id =
-    file.id;
+            showFileMenu(
+                file,
+                element
+            );
+        }
+    );
 
 
-element.innerHTML = `
-
-    <div class="item-icon file-icon">
-
-        ${icon(
-            getFileIcon(
-                file.mimeType,
-                file.name
-            )
-        )}
-
-    </div>
-
-
-    <div class="item-name">
-
-        ${escapeHtml(
-            file.name
-        )}
-
-    </div>
-
-
-    <div class="item-type">
-
-        ${formatFileSize(
-            file.size
-        )}
-
-    </div>
-
-`;
-
-
-return element;
-
+    return element;
 }
+
+
+// ============================================
+// File Menu
+// ============================================
+
+function showFileMenu(
+    file,
+    anchor
+) {
+
+    const menu =
+        document.getElementById(
+            "fileMenu"
+        );
+
+
+    if (!menu) {
+        return;
+    }
+
+
+    menu.innerHTML = `
+
+        <button
+            data-action="open"
+        >
+            ${icon("open_in_new")}
+            <span>فتح الملف</span>
+        </button>
+
+
+        <button
+            data-action="download"
+        >
+            ${icon("download")}
+            <span>تنزيل</span>
+        </button>
+
+
+        <div class="menu-divider"></div>
+
+
+        <button
+            data-action="rename"
+        >
+            ${icon("edit")}
+            <span>إعادة تسمية</span>
+        </button>
+
+
+        <button
+            data-action="move"
+        >
+            ${icon("drive_file_move")}
+            <span>نقل إلى مجلد</span>
+        </button>
+
+
+        <div class="menu-divider"></div>
+
+
+        <button
+            data-action="delete"
+            class="danger"
+        >
+            ${icon("delete")}
+            <span>حذف</span>
+        </button>
+    `;
+
+
+    const rect =
+        anchor.getBoundingClientRect();
+
+
+    menu.style.top =
+        `${rect.bottom + 6}px`;
+
+
+    menu.style.left =
+        `${Math.min(
+            rect.left,
+            window.innerWidth - 220
+        )}px`;
+
+
+    menu.classList.add(
+        "visible"
+    );
+
+
+    menu.querySelectorAll(
+        "button"
+    ).forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                async event => {
+
+                    event.stopPropagation();
+
+                    const action =
+                        button.dataset.action;
+
+
+                    menu.classList.remove(
+                        "visible"
+                    );
+
+
+                    if (
+                        action ===
+                        "open"
+                    ) {
+
+                        openFile(
+                            file
+                        );
+
+                    }
+
+
+                    if (
+                        action ===
+                        "download"
+                    ) {
+
+                        downloadFile(
+                            file
+                        );
+
+                    }
+
+
+                    if (
+                        action ===
+                        "rename"
+                    ) {
+
+                        await renameFile(
+                            file
+                        );
+
+                    }
+
+
+                    if (
+                        action ===
+                        "move"
+                    ) {
+
+                        await openMoveModal(
+                            file
+                        );
+
+                    }
+
+
+                    if (
+                        action ===
+                        "delete"
+                    ) {
+
+                        await deleteFile(
+                            file
+                        );
+
+                    }
+                }
+            );
+        }
+    );
+}
+
+
+// ============================================
+// Open File
+// ============================================
+
+function openFile(
+    file
+) {
+
+    if (!file.telegramFileId) {
+
+        alert(
+            "لا يوجد ملف Telegram مرتبط بهذا الملف."
+        );
+
+        return;
+    }
+
+
+    const url =
+        `/api/telegram?fileId=${encodeURIComponent(
+            file.telegramFileId
+        )}`;
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+}
+
+
+// ============================================
+// Download
+// ============================================
+
+function downloadFile(
+    file
+) {
+
+    if (!file.telegramFileId) {
+
+        alert(
+            "لا يوجد ملف Telegram مرتبط بهذا الملف."
+        );
+
+        return;
+    }
+
+
+    const url =
+        `/api/telegram?fileId=${encodeURIComponent(
+            file.telegramFileId
+        )}&download=1&name=${encodeURIComponent(
+            file.name
+        )}`;
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href = url;
+
+    link.download =
+        file.name;
+
+    link.target =
+        "_blank";
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+}
+
+
+// ============================================
+// Rename
+// ============================================
+
+async function renameFile(
+    file
+) {
+
+    const newName =
+        prompt(
+            "اكتب الاسم الجديد:",
+            file.name
+        );
+
+
+    if (newName === null) {
+        return;
+    }
+
+
+    const cleanName =
+        newName.trim();
+
+
+    if (!cleanName) {
+
+        alert(
+            "اسم الملف لا يمكن أن يكون فارغًا."
+        );
+
+        return;
+    }
+
+
+    if (
+        cleanName ===
+        file.name
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        await updateDoc(
+            doc(
+                db,
+                "files",
+                file.id
+            ),
+            {
+
+                name:
+                    cleanName
+
+            }
+        );
+
+
+        await refreshCurrentFolder();
+
+
+    } catch (error) {
+
+        console.error(
+            "Rename error:",
+            error
+        );
+
+
+        alert(
+            "حدث خطأ أثناء إعادة التسمية:\n\n" +
+            error.message
+        );
+    }
+}
+
+
+// ============================================
+// Open Move Modal
+// ============================================
+
+async function openMoveModal(
+    file
+) {
+
+    await loadAllFolders();
+
+
+    const modal =
+        document.getElementById(
+            "moveModal"
+        );
+
+
+    const select =
+        document.getElementById(
+            "moveFolderSelect"
+        );
+
+
+    if (!modal || !select) {
+        return;
+    }
+
+
+    select.innerHTML = "";
+
+
+    // Root option
+
+    const rootOption =
+        document.createElement(
+            "option"
+        );
+
+
+    rootOption.value = "";
+
+    rootOption.textContent =
+        "الرئيسية";
+
+
+    select.appendChild(
+        rootOption
+    );
+
+
+    // Folders
+
+    foldersCache
+        .sort(
+            (a, b) =>
+                String(a.name)
+                    .localeCompare(
+                        String(b.name),
+                        "ar"
+                    )
+        )
+        .forEach(
+            folder => {
+
+                // Don't allow moving into current folder
+
+                if (
+                    folder.id ===
+                    file.folderId
+                ) {
+                    return;
+                }
+
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    folder.id;
+
+
+                option.textContent =
+                    getFolderDisplayName(
+                        folder
+                    );
+
+
+                select.appendChild(
+                    option
+                );
+            }
+        );
+
+
+    // Select current folder
+
+    select.value =
+        file.folderId || "";
+
+
+    select.dataset.fileId =
+        file.id;
+
+
+    modal.classList.add(
+        "visible"
+    );
+}
+
+
+// ============================================
+// Folder Display Name
+// ============================================
+
+function getFolderDisplayName(
+    folder
+) {
+
+    const names = [];
+
+    let current =
+        folder;
+
+
+    while (current) {
+
+        names.unshift(
+            current.name
+        );
+
+
+        current =
+            foldersCache.find(
+                item =>
+                    item.id ===
+                    (current.parentId || null)
+            );
+    }
+
+
+    return names.join(
+        " / "
+    );
+}
+
+
+// ============================================
+// Close Move Modal
+// ============================================
+
+function closeMoveModal() {
+
+    const modal =
+        document.getElementById(
+            "moveModal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "visible"
+        );
+    }
+}
+
+
+// ============================================
+// Confirm Move
+// ============================================
+
+async function confirmMoveFile() {
+
+    const modal =
+        document.getElementById(
+            "moveModal"
+        );
+
+
+    const select =
+        document.getElementById(
+            "moveFolderSelect"
+        );
+
+
+    const button =
+        document.getElementById(
+            "confirmMoveButton"
+        );
+
+
+    const fileId =
+        select.dataset.fileId;
+
+
+    const newFolderId =
+        select.value ||
+        null;
+
+
+    if (!fileId) {
+        return;
+    }
+
+
+    try {
+
+        button.disabled = true;
+
+
+        button.innerHTML = `
+
+            ${icon(
+                "progress_activity",
+                "loading-icon"
+            )}
+
+            <span>
+                جاري النقل...
+            </span>
+        `;
+
+
+        await updateDoc(
+            doc(
+                db,
+                "files",
+                fileId
+            ),
+            {
+
+                folderId:
+                    newFolderId
+
+            }
+        );
+
+
+        closeMoveModal();
+
+
+        await refreshCurrentFolder();
+
+
+    } catch (error) {
+
+        console.error(
+            "Move error:",
+            error
+        );
+
+
+        alert(
+            "حدث خطأ أثناء نقل الملف:\n\n" +
+            error.message
+        );
+
+
+    } finally {
+
+        button.disabled =
+            false;
+
+
+        button.innerHTML = `
+
+            ${icon("drive_file_move")}
+
+            نقل
+        `;
+    }
+}
+
+
+// ============================================
+// Delete File
+// ============================================
+
+async function deleteFile(
+    file
+) {
+
+    const confirmed =
+        confirm(
+            `هل أنت متأكد من حذف الملف؟\n\n${file.name}\n\nسيتم حذف الملف من Telegram وقاعدة البيانات.`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        // ====================================
+        // Delete Telegram message
+        // ====================================
+
+        const response =
+            await fetch(
+                "/api/telegram",
+                {
+
+                    method:
+                        "DELETE",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            messageId:
+                                file.telegramMessageId
+
+                        })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.ok
+        ) {
+
+            throw new Error(
+                result.error ||
+                "Telegram delete failed"
+            );
+        }
+
+
+        // ====================================
+        // Delete Firestore document
+        // ====================================
+
+        await deleteDoc(
+            doc(
+                db,
+                "files",
+                file.id
+            )
+        );
+
+
+        alert(
+            "تم حذف الملف بنجاح."
+        );
+
+
+        await refreshCurrentFolder();
+
+
+    } catch (error) {
+
+        console.error(
+            "Delete error:",
+            error
+        );
+
+
+        alert(
+            "حدث خطأ أثناء حذف الملف:\n\n" +
+            error.message
+        );
+    }
+}
+
 
 // ============================================
 // Search
 // ============================================
 
 async function searchFiles(
-searchText
+    searchText
 ) {
 
-if (!currentUser) {
-    return;
-}
+    if (!currentUser) {
+        return;
+    }
 
 
-const container =
-    document.getElementById(
-        "fileContainer"
-    );
-
-
-if (!container) {
-    return;
-}
-
-
-try {
-
-    const filesQuery =
-        query(
-            collection(
-                db,
-                "files"
-            ),
-
-            where(
-                "ownerId",
-                "==",
-                currentUser.uid
-            ),
-
-            where(
-                "deleted",
-                "==",
-                false
-            )
+    const container =
+        document.getElementById(
+            "fileContainer"
         );
 
 
-    const snapshot =
-        await getDocs(
-            filesQuery
-        );
+    try {
 
+        const filesQuery =
+            query(
+                collection(
+                    db,
+                    "files"
+                ),
 
-    const results = [];
+                where(
+                    "ownerId",
+                    "==",
+                    currentUser.uid
+                ),
 
-
-    snapshot.forEach(
-        docSnapshot => {
-
-            const file =
-                docSnapshot.data();
-
-
-            const name =
-                (
-                    file.name ||
-                    ""
-                ).toLowerCase();
-
-
-            if (
-                name.includes(
-                    searchText
+                where(
+                    "deleted",
+                    "==",
+                    false
                 )
-            ) {
+            );
 
-                results.push({
 
-                    id:
-                        docSnapshot.id,
+        const snapshot =
+            await getDocs(
+                filesQuery
+            );
 
-                    ...file
 
-                });
+        const results = [];
 
+
+        snapshot.forEach(
+            fileDoc => {
+
+                const file =
+                    fileDoc.data();
+
+
+                const name =
+                    String(
+                        file.name || ""
+                    ).toLowerCase();
+
+
+                if (
+                    name.includes(
+                        searchText
+                    )
+                ) {
+
+                    results.push({
+
+                        id:
+                            fileDoc.id,
+
+                        ...file
+
+                    });
+                }
             }
-
-        }
-    );
+        );
 
 
-    results.sort(
-        (a, b) => {
-
-            const aTime =
-                getTimestamp(
-                    a.createdAt
-                );
-
-            const bTime =
-                getTimestamp(
-                    b.createdAt
-                );
-
-            return bTime - aTime;
-
-        }
-    );
+        results.sort(
+            sortByDate
+        );
 
 
-    container.innerHTML = "";
+        container.innerHTML = "";
 
 
-    if (!results.length) {
+        if (!results.length) {
 
-        container.innerHTML = `
+            container.innerHTML = `
 
-            <div class="empty-state">
+                <div class="empty-state">
 
-                <div class="empty-icon">
+                    <div class="empty-icon">
 
-                    ${icon("search_off")}
+                        ${icon("search_off")}
+
+                    </div>
+
+                    <h3>
+                        لا توجد نتائج
+                    </h3>
+
+                    <p>
+                        لم نجد ملفات تطابق بحثك.
+                    </p>
 
                 </div>
+            `;
 
-                <h3>
-                    لا توجد نتائج
-                </h3>
+            return;
+        }
 
-                <p>
-                    لم نجد ملفات تطابق بحثك.
-                </p>
 
-            </div>
+        results.forEach(
+            file => {
 
-        `;
+                container.appendChild(
+                    createFileElement(
+                        file
+                    )
+                );
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Search error:",
+            error
+        );
+
+
+        showError(
+            "حدث خطأ أثناء البحث",
+            error
+        );
+    }
+}
+
+
+// ============================================
+// Upload
+// ============================================
+
+async function uploadFileToTelegram(
+    file
+) {
+
+    if (!currentUser) {
+
+        alert(
+            "يجب تسجيل الدخول أولاً"
+        );
 
         return;
     }
 
 
-    results.forEach(
-        file => {
-
-            const element =
-                createFileElement(
-                    file
-                );
+    const MAX_SIZE =
+        4 * 1024 * 1024;
 
 
-            container.appendChild(
-                element
-            );
+    if (
+        file.size >
+        MAX_SIZE
+    ) {
 
-        }
-    );
+        alert(
+            "الملف كبير جدًا.\n\n" +
+            "الحد الحالي للرفع هو 4 MB تقريبًا."
+        );
 
-
-} catch (error) {
-
-    console.error(
-        "Search error:",
-        error
-    );
+        return;
+    }
 
 
-    showError(
-        "حدث خطأ أثناء البحث",
-        error
-    );
-}
-
-}
-
-// ============================================
-// Upload File To Telegram
-// ============================================
-
-async function uploadFileToTelegram(
-file
-) {
-
-if (!currentUser) {
-
-    alert(
-        "يجب تسجيل الدخول أولاً"
-    );
-
-    return;
-}
+    const uploadButton =
+        document.getElementById(
+            "uploadButton"
+        );
 
 
-if (!file) {
-    return;
-}
-
-
-// Current safe limit
-// because Vercel Function request limit
-
-const MAX_SIZE =
-    4 * 1024 * 1024;
-
-
-if (file.size > MAX_SIZE) {
-
-    alert(
-        "الملف كبير جدًا.\n\n" +
-        "الحد الحالي للرفع هو 4 MB تقريبًا."
-    );
-
-    return;
-}
-
-
-const uploadButton =
-    document.getElementById(
-        "uploadButton"
-    );
-
-
-try {
-
-    if (uploadButton) {
+    try {
 
         uploadButton.disabled = true;
+
 
         uploadButton.innerHTML = `
 
@@ -1527,138 +2369,112 @@ try {
             <span>
                 جاري الرفع...
             </span>
-
         `;
-    }
 
 
-    console.log(
-        "Starting upload:",
-        file.name
-    );
+        const formData =
+            new FormData();
 
 
-    const formData =
-        new FormData();
-
-
-    formData.append(
-        "file",
-        file
-    );
-
-
-    const response =
-        await fetch(
-            "/api/telegram",
-            {
-                method: "POST",
-                body: formData
-            }
+        formData.append(
+            "file",
+            file
         );
 
 
-    const result =
-        await response.json();
+        const response =
+            await fetch(
+                "/api/telegram",
+                {
+
+                    method:
+                        "POST",
+
+                    body:
+                        formData
+
+                }
+            );
 
 
-    console.log(
-        "Telegram API response:",
-        result
-    );
+        const result =
+            await response.json();
 
 
-    if (
-        !response.ok ||
-        !result.ok
-    ) {
+        if (
+            !response.ok ||
+            !result.ok
+        ) {
 
-        throw new Error(
-            result.error ||
-            "Upload failed"
-        );
-    }
-
-
-    // ====================================
-    // Save Metadata
-    // ====================================
-
-    const fileData = {
-
-        name:
-            result.file.name,
-
-        size:
-            result.file.size,
-
-        mimeType:
-            result.file.mimeType,
-
-        folderId:
-            currentFolderId ||
-            null,
-
-        telegramMessageId:
-            result.telegram.messageId,
-
-        telegramFileId:
-            result.telegram.fileId,
-
-        ownerId:
-            currentUser.uid,
-
-        deleted:
-            false,
-
-        createdAt:
-            new Date()
-
-    };
+            throw new Error(
+                result.error ||
+                "Upload failed"
+            );
+        }
 
 
-    const fileRef =
         await addDoc(
             collection(
                 db,
                 "files"
             ),
-            fileData
+            {
+
+                name:
+                    result.file.name,
+
+                size:
+                    result.file.size,
+
+                mimeType:
+                    result.file.mimeType,
+
+                folderId:
+                    currentFolderId ||
+                    null,
+
+                telegramMessageId:
+                    result.telegram.messageId,
+
+                telegramFileId:
+                    result.telegram.fileId,
+
+                ownerId:
+                    currentUser.uid,
+
+                deleted:
+                    false,
+
+                createdAt:
+                    new Date()
+
+            }
         );
 
 
-    console.log(
-        "Firestore document created:",
-        fileRef.id
-    );
+        alert(
+            "تم رفع الملف بنجاح ✅"
+        );
 
 
-    alert(
-        "تم رفع الملف بنجاح ✅\n\n" +
-        file.name
-    );
+        await refreshCurrentFolder();
 
 
-    await loadFiles();
+    } catch (error) {
+
+        console.error(
+            "Upload error:",
+            error
+        );
 
 
-} catch (error) {
-
-    console.error(
-        "Upload error:",
-        error
-    );
+        alert(
+            "حدث خطأ أثناء رفع الملف:\n\n" +
+            error.message
+        );
 
 
-    alert(
-        "حدث خطأ أثناء رفع الملف:\n\n" +
-        error.message
-    );
-
-
-} finally {
-
-    if (uploadButton) {
+    } finally {
 
         uploadButton.disabled =
             false;
@@ -1671,12 +2487,10 @@ try {
             <span>
                 رفع ملف
             </span>
-
         `;
     }
 }
 
-}
 
 // ============================================
 // Breadcrumb
@@ -1684,22 +2498,45 @@ try {
 
 function updateBreadcrumb() {
 
-const breadcrumb =
-    document.getElementById(
-        "breadcrumb"
-    );
+    const breadcrumb =
+        document.getElementById(
+            "breadcrumb"
+        );
 
 
-if (!breadcrumb) {
-    return;
-}
+    if (!breadcrumb) {
+        return;
+    }
 
 
-if (!currentFolderId) {
+    if (!currentFolderId) {
 
-    breadcrumb.innerHTML = `
+        breadcrumb.innerHTML = `
 
-        <div class="breadcrumb-item active">
+            <div class="breadcrumb-item active">
+
+                ${icon("home")}
+
+                <span>
+                    الرئيسية
+                </span>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    const parts = [];
+
+
+    parts.push(`
+
+        <button
+            id="breadcrumbHome"
+            class="breadcrumb-button"
+        >
 
             ${icon("home")}
 
@@ -1707,519 +2544,483 @@ if (!currentFolderId) {
                 الرئيسية
             </span>
 
-        </div>
-
-    `;
-
-    return;
-}
+        </button>
+    `);
 
 
-breadcrumb.innerHTML = `
+    currentFolderPath.forEach(
+        (folder, index) => {
 
-    <button
-        id="breadcrumbHome"
-        class="breadcrumb-button"
-    >
+            parts.push(`
 
-        ${icon("home")}
+                <span class="breadcrumb-separator">
 
-        <span>
-            الرئيسية
-        </span>
+                    ${icon("chevron_left")}
 
-    </button>
+                </span>
+            `);
 
 
-    <span class="breadcrumb-separator">
+            if (
+                index ===
+                currentFolderPath.length - 1
+            ) {
 
-        ${icon("chevron_left")}
+                parts.push(`
 
-    </span>
+                    <div class="breadcrumb-current">
 
+                        ${icon("folder")}
 
-    <div class="breadcrumb-current">
+                        <span>
+                            ${escapeHtml(
+                                folder.name
+                            )}
+                        </span>
 
-        ${icon("folder")}
+                    </div>
+                `);
 
-        <span>
-            ${escapeHtml(
-                currentFolderName
-            )}
-        </span>
+            } else {
 
-    </div>
+                parts.push(`
 
-`;
+                    <button
+                        class="breadcrumb-folder-button"
+                        data-folder-id="${folder.id}"
+                    >
 
+                        ${icon("folder")}
 
-const home =
-    document.getElementById(
-        "breadcrumbHome"
+                        <span>
+                            ${escapeHtml(
+                                folder.name
+                            )}
+                        </span>
+
+                    </button>
+                `);
+            }
+        }
     );
 
 
-if (home) {
+    breadcrumb.innerHTML =
+        parts.join("");
 
-    home.addEventListener(
-        "click",
-        goHome
-    );
 
+    const home =
+        document.getElementById(
+            "breadcrumbHome"
+        );
+
+
+    if (home) {
+
+        home.addEventListener(
+            "click",
+            goHome
+        );
+    }
+
+
+    breadcrumb
+        .querySelectorAll(
+            ".breadcrumb-folder-button"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        const folder =
+                            foldersCache.find(
+                                item =>
+                                    item.id ===
+                                    button.dataset.folderId
+                            );
+
+
+                        if (!folder) {
+                            return;
+                        }
+
+
+                        currentFolderId =
+                            folder.id;
+
+                        currentFolderName =
+                            folder.name;
+
+                        currentFolderPath =
+                            buildFolderPath(
+                                folder.id
+                            );
+
+
+                        clearSearch();
+
+                        updateBreadcrumb();
+
+                        await refreshCurrentFolder();
+                    }
+                );
+            }
+        );
 }
 
-}
 
 // ============================================
 // File Icon
 // ============================================
 
 function getFileIcon(
-mimeType,
-fileName
-) {
-
-const type =
-    mimeType || "";
-
-
-if (
-    type.startsWith(
-        "image/"
-    )
-) {
-
-    return "image";
-
-}
-
-
-if (
-    type.startsWith(
-        "video/"
-    )
-) {
-
-    return "video_file";
-
-}
-
-
-if (
-    type.startsWith(
-        "audio/"
-    )
-) {
-
-    return "audio_file";
-
-}
-
-
-if (
-    type.includes(
-        "pdf"
-    )
-) {
-
-    return "picture_as_pdf";
-
-}
-
-
-if (
-    type.includes(
-        "zip"
-    ) ||
-    type.includes(
-        "compressed"
-    ) ||
-    type.includes(
-        "rar"
-    )
-) {
-
-    return "folder_zip";
-
-}
-
-
-const extension =
+    mimeType,
     fileName
-        ?.split(".")
-        .pop()
-        ?.toLowerCase();
-
-
-if (
-    extension === "doc" ||
-    extension === "docx"
 ) {
 
-    return "article";
+    const type =
+        mimeType || "";
 
+
+    if (
+        type.startsWith(
+            "image/"
+        )
+    ) {
+        return "image";
+    }
+
+
+    if (
+        type.startsWith(
+            "video/"
+        )
+    ) {
+        return "video_file";
+    }
+
+
+    if (
+        type.startsWith(
+            "audio/"
+        )
+    ) {
+        return "audio_file";
+    }
+
+
+    if (
+        type.includes(
+            "pdf"
+        )
+    ) {
+        return "picture_as_pdf";
+    }
+
+
+    if (
+        type.includes("zip") ||
+        type.includes("compressed") ||
+        type.includes("rar")
+    ) {
+        return "folder_zip";
+    }
+
+
+    const extension =
+        fileName
+            ?.split(".")
+            .pop()
+            ?.toLowerCase();
+
+
+    if (
+        extension === "doc" ||
+        extension === "docx"
+    ) {
+        return "article";
+    }
+
+
+    if (
+        extension === "xls" ||
+        extension === "xlsx"
+    ) {
+        return "table_chart";
+    }
+
+
+    if (
+        extension === "ppt" ||
+        extension === "pptx"
+    ) {
+        return "slideshow";
+    }
+
+
+    if (
+        extension === "txt"
+    ) {
+        return "text_snippet";
+    }
+
+
+    if (
+        [
+            "js",
+            "html",
+            "css",
+            "java",
+            "cpp",
+            "py",
+            "c"
+        ].includes(
+            extension
+        )
+    ) {
+        return "code";
+    }
+
+
+    return "description";
 }
 
-
-if (
-    extension === "xls" ||
-    extension === "xlsx"
-) {
-
-    return "table_chart";
-
-}
-
-
-if (
-    extension === "ppt" ||
-    extension === "pptx"
-) {
-
-    return "slideshow";
-
-}
-
-
-if (
-    extension === "txt"
-) {
-
-    return "text_snippet";
-
-}
-
-
-if (
-    extension === "js" ||
-    extension === "html" ||
-    extension === "css" ||
-    extension === "java" ||
-    extension === "cpp" ||
-    extension === "py"
-) {
-
-    return "code";
-
-}
-
-
-return "description";
-
-}
 
 // ============================================
 // File Size
 // ============================================
 
 function formatFileSize(
-bytes
+    bytes
 ) {
 
-if (
-    !bytes ||
-    bytes <= 0
-) {
+    if (
+        !bytes ||
+        bytes <= 0
+    ) {
+        return "0 B";
+    }
 
-    return "0 B";
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+    ];
+
+
+    const index =
+        Math.min(
+            Math.floor(
+                Math.log(bytes) /
+                Math.log(1024)
+            ),
+            units.length - 1
+        );
+
+
+    const size =
+        bytes /
+        Math.pow(
+            1024,
+            index
+        );
+
+
+    return (
+        size.toFixed(
+            index === 0
+                ? 0
+                : 2
+        ) +
+        " " +
+        units[index]
+    );
 }
 
-
-const units = [
-    "B",
-    "KB",
-    "MB",
-    "GB",
-    "TB"
-];
-
-
-const index =
-    Math.floor(
-        Math.log(bytes) /
-        Math.log(1024)
-    );
-
-
-const size =
-    bytes /
-    Math.pow(
-        1024,
-        index
-    );
-
-
-return (
-    size.toFixed(
-        index === 0
-            ? 0
-            : 2
-    ) +
-    " " +
-    units[index]
-);
-
-}
 
 // ============================================
 // Timestamp
 // ============================================
 
 function getTimestamp(
-value
+    value
 ) {
 
-if (!value) {
+    if (!value) {
+        return 0;
+    }
+
+
+    if (
+        typeof value.toMillis ===
+        "function"
+    ) {
+
+        return value.toMillis();
+    }
+
+
+    if (
+        value instanceof Date
+    ) {
+
+        return value.getTime();
+    }
+
+
+    if (
+        typeof value ===
+        "number"
+    ) {
+
+        return value;
+    }
+
+
     return 0;
 }
 
 
-if (
-    typeof value.toMillis ===
-    "function"
-) {
-
-    return value.toMillis();
-
-}
-
-
-if (
-    value instanceof Date
-) {
-
-    return value.getTime();
-
-}
-
-
-if (
-    typeof value === "number"
-) {
-
-    return value;
-
-}
-
-
-return 0;
-
-}
-
 // ============================================
-// Empty State
+// Error
 // ============================================
 
-function updateEmptyState() {
-
-const container =
-    document.getElementById(
-        "fileContainer"
-    );
-
-
-if (!container) {
-    return;
-}
-
-
-const items =
-    container.querySelectorAll(
-        ".folder-item, .file-item"
-    );
-
-
-const existingEmpty =
-    container.querySelector(
-        ".empty-state"
-    );
-
-
-if (
-    items.length === 0 &&
-    !existingEmpty
+function showError(
+    title,
+    error
 ) {
+
+    const container =
+        document.getElementById(
+            "fileContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
 
     container.innerHTML = `
 
-        <div class="empty-state">
+        <div class="empty-state error-state">
 
             <div class="empty-icon">
 
-                ${icon("cloud_off")}
+                ${icon("error")}
 
             </div>
 
 
             <h3>
-                المجلد فارغ
+                ${escapeHtml(
+                    title
+                )}
             </h3>
 
 
             <p>
-                ابدأ برفع ملف أو إنشاء مجلد جديد.
+                ${escapeHtml(
+                    error?.message ||
+                    "حدث خطأ غير معروف"
+                )}
             </p>
 
         </div>
-
     `;
-
 }
 
-}
-
-// ============================================
-// Error Display
-// ============================================
-
-function showError(
-title,
-error
-) {
-
-const container =
-    document.getElementById(
-        "fileContainer"
-    );
-
-
-if (!container) {
-    return;
-}
-
-
-console.error(
-    title,
-    error
-);
-
-
-container.innerHTML = `
-
-    <div class="empty-state error-state">
-
-        <div class="empty-icon">
-
-            ${icon("error")}
-
-        </div>
-
-
-        <h3>
-            ${escapeHtml(
-                title
-            )}
-        </h3>
-
-
-        <p>
-            ${escapeHtml(
-                error?.message ||
-                "حدث خطأ غير معروف"
-            )}
-        </p>
-
-    </div>
-
-`;
-
-}
 
 // ============================================
 // Escape HTML
 // ============================================
 
 function escapeHtml(
-value
+    value
 ) {
 
-if (
-    value === null ||
-    value === undefined
-) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
 
-    return "";
 
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
-
-return String(value)
-
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-
-    .replace(
-        /</g,
-        "&lt;"
-    )
-
-    .replace(
-        />/g,
-        "&gt;"
-    )
-
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
-}
 
 // ============================================
-// Authentication State
+// Auth State
 // ============================================
 
 onAuthStateChanged(
-auth,
-user => {
+    auth,
+    user => {
 
-    if (user) {
+        if (user) {
 
-        currentUser =
-            user;
+            currentUser =
+                user;
 
+            currentFolderId =
+                null;
 
-        console.log(
-            "Authenticated user:",
-            user.uid
-        );
+            currentFolderName =
+                "الرئيسية";
 
+            currentFolderPath =
+                [];
 
-        currentFolderId =
-            null;
+            showMainApp();
 
+        } else {
 
-        currentFolderName =
-            "الرئيسية";
+            currentUser =
+                null;
 
+            currentFolderId =
+                null;
 
-        showMainApp();
+            currentFolderName =
+                "الرئيسية";
 
-    } else {
+            currentFolderPath =
+                [];
 
-        currentUser =
-            null;
-
-
-        currentFolderId =
-            null;
-
-
-        currentFolderName =
-            "الرئيسية";
-
-
-        showLoginScreen();
-
+            showLoginScreen();
+        }
     }
-
-}
-
 );
