@@ -34,7 +34,6 @@ where
 
 const firebaseConfig = {
 
-```
 apiKey:
     "AIzaSyDdQSIn79XHyD1rZy4sEatETdnbBlJBCKc",
 
@@ -52,7 +51,6 @@ messagingSenderId:
 
 appId:
     "1:939924244118:web:dcc613a89bb158348f24b7"
-```
 
 };
 
@@ -98,13 +96,11 @@ name,
 className = ""
 ) {
 
-```
 return `
     <span class="material-symbols-rounded ${className}">
         ${name}
     </span>
 `;
-```
 
 }
 
@@ -114,7 +110,6 @@ return `
 
 function showLoginScreen() {
 
-```
 if (!appContainer) {
     return;
 }
@@ -176,7 +171,6 @@ if (loginButton) {
     );
 
 }
-```
 
 }
 
@@ -186,7 +180,6 @@ if (loginButton) {
 
 async function loginWithGoogle() {
 
-```
 const button =
     document.getElementById(
         "googleLoginButton"
@@ -269,7 +262,6 @@ try {
         error.message
     );
 }
-```
 
 }
 
@@ -279,7 +271,6 @@ try {
 
 async function logout() {
 
-```
 try {
 
     await signOut(auth);
@@ -297,7 +288,6 @@ try {
         error.message
     );
 }
-```
 
 }
 
@@ -307,7 +297,6 @@ try {
 
 function showMainApp() {
 
-```
 if (!appContainer) {
     return;
 }
@@ -740,7 +729,6 @@ if (clearSearchButton) {
 updateBreadcrumb();
 
 refreshCurrentFolder();
-```
 
 }
 
@@ -750,7 +738,6 @@ refreshCurrentFolder();
 
 async function goHome() {
 
-```
 currentFolderId = null;
 
 currentFolderName =
@@ -782,7 +769,6 @@ if (clearButton) {
 updateBreadcrumb();
 
 await refreshCurrentFolder();
-```
 
 }
 
@@ -792,13 +778,11 @@ await refreshCurrentFolder();
 
 async function refreshCurrentFolder() {
 
-```
 await loadFolders();
 
 await loadFiles();
 
 updateBreadcrumb();
-```
 
 }
 
@@ -808,7 +792,6 @@ updateBreadcrumb();
 
 async function createFolder() {
 
-```
 if (!currentUser) {
 
     alert(
@@ -885,7 +868,6 @@ try {
         error.message
     );
 }
-```
 
 }
 
@@ -895,7 +877,6 @@ try {
 
 async function loadFolders() {
 
-```
 if (!currentUser) {
     return;
 }
@@ -1024,7 +1005,6 @@ try {
         error
     );
 }
-```
 
 }
 
@@ -1036,7 +1016,6 @@ function createFolderElement(
 folder
 ) {
 
-```
 const element =
     document.createElement(
         "div"
@@ -1100,7 +1079,6 @@ element.addEventListener(
 
 
 return element;
-```
 
 }
 
@@ -1112,7 +1090,6 @@ async function loadFiles(
 folderId = currentFolderId
 ) {
 
-```
 if (!currentUser) {
     return;
 }
@@ -1250,7 +1227,6 @@ try {
         error
     );
 }
-```
 
 }
 
@@ -1262,7 +1238,6 @@ function createFileElement(
 file
 ) {
 
-```
 const element =
     document.createElement(
         "div"
@@ -1312,7 +1287,6 @@ element.innerHTML = `
 
 
 return element;
-```
 
 }
 
@@ -1324,7 +1298,6 @@ async function searchFiles(
 searchText
 ) {
 
-```
 if (!currentUser) {
     return;
 }
@@ -1488,7 +1461,6 @@ try {
         error
     );
 }
-```
 
 }
 
@@ -1500,7 +1472,6 @@ async function uploadFileToTelegram(
 file
 ) {
 
-```
 if (!currentUser) {
 
     alert(
@@ -1704,7 +1675,6 @@ try {
         `;
     }
 }
-```
 
 }
 
@@ -1714,7 +1684,6 @@ try {
 
 function updateBreadcrumb() {
 
-```
 const breadcrumb =
     document.getElementById(
         "breadcrumb"
@@ -1798,7 +1767,6 @@ if (home) {
     );
 
 }
-```
 
 }
 
@@ -1811,7 +1779,6 @@ mimeType,
 fileName
 ) {
 
-```
 const type =
     mimeType || "";
 
@@ -1938,7 +1905,6 @@ if (
 
 
 return "description";
-```
 
 }
 
@@ -1950,7 +1916,6 @@ function formatFileSize(
 bytes
 ) {
 
-```
 if (
     !bytes ||
     bytes <= 0
@@ -1993,7 +1958,6 @@ return (
     " " +
     units[index]
 );
-```
 
 }
 
@@ -2005,7 +1969,6 @@ function getTimestamp(
 value
 ) {
 
-```
 if (!value) {
     return 0;
 }
@@ -2040,7 +2003,6 @@ if (
 
 
 return 0;
-```
 
 }
 
@@ -2050,7 +2012,6 @@ return 0;
 
 function updateEmptyState() {
 
-```
 const container =
     document.getElementById(
         "fileContainer"
@@ -2104,7 +2065,6 @@ if (
     `;
 
 }
-```
 
 }
 
@@ -2117,7 +2077,6 @@ title,
 error
 ) {
 
-```
 const container =
     document.getElementById(
         "fileContainer"
@@ -2163,7 +2122,6 @@ container.innerHTML = `
     </div>
 
 `;
-```
 
 }
 
@@ -2175,7 +2133,6 @@ function escapeHtml(
 value
 ) {
 
-```
 if (
     value === null ||
     value === undefined
@@ -2212,7 +2169,6 @@ return String(value)
         /'/g,
         "&#039;"
     );
-```
 
 }
 
@@ -2224,7 +2180,6 @@ onAuthStateChanged(
 auth,
 user => {
 
-```
     if (user) {
 
         currentUser =
@@ -2266,6 +2221,5 @@ user => {
     }
 
 }
-```
 
 );
