@@ -1,434 +1,1026 @@
+/* ============================================
+My Cloud Storage - style.css
+============================================ */
+
+/* ============================================
+General
+============================================ */
+
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  }
+
+html {
+min-height: 100%;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background: #f8f9fa;
-    color: #202124;
+min-height: 100vh;
+
+```
+font-family:
+    Arial,
+    "Segoe UI",
+    Tahoma,
+    sans-serif;
+
+background: #f5f7fb;
+
+color: #202124;
+
+direction: rtl;
+```
+
 }
+
+/* ============================================
+Application
+============================================ */
+
+#app {
+min-height: 100vh;
+}
+
+.cloud-app {
+min-height: 100vh;
+}
+
+/* ============================================
+Header
+============================================ */
+
+.app-header {
+
+```
+width: 100%;
+
+min-height: 70px;
+
+padding: 14px 24px;
+
+display: flex;
+
+align-items: center;
+
+justify-content: space-between;
+
+gap: 20px;
+
+background: #ffffff;
+
+border-bottom: 1px solid #e5e7eb;
+
+box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.05);
+```
+
+}
+
+.app-title h1 {
+
+```
+font-size: 22px;
+
+font-weight: 700;
+
+color: #1f2937;
+```
+
+}
+
+.user-area {
+
+```
+display: flex;
+
+align-items: center;
+
+gap: 14px;
+```
+
+}
+
+#userName {
+
+```
+max-width: 220px;
+
+overflow: hidden;
+
+text-overflow: ellipsis;
+
+white-space: nowrap;
+
+font-size: 14px;
+
+color: #4b5563;
+```
+
+}
+
+/* ============================================
+Buttons
+============================================ */
 
 button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-family: inherit;
+
+```
+border: none;
+
+outline: none;
+
+font-family: inherit;
+
+cursor: pointer;
+
+transition:
+    background 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+```
+
 }
 
+button:active {
 
-/* Top Bar */
+```
+transform: scale(0.97);
+```
 
-.topbar {
-    height: 70px;
-    background: white;
-    border-bottom: 1px solid #ddd;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 25px;
-
-    gap: 30px;
 }
 
-.logo {
-    font-size: 21px;
-    font-weight: bold;
-    min-width: 160px;
+/* ============================================
+Logout Button
+============================================ */
+
+#logoutButton {
+
+```
+padding: 9px 15px;
+
+border-radius: 8px;
+
+background: #f3f4f6;
+
+color: #374151;
+
+font-size: 14px;
+```
+
 }
 
-.search-box {
-    flex: 1;
+#logoutButton:hover {
 
-    max-width: 650px;
+```
+background: #e5e7eb;
+```
 
-    background: #f1f3f4;
-
-    border-radius: 25px;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0 18px;
 }
 
-.search-box span {
-    font-size: 18px;
+/* ============================================
+Toolbar
+============================================ */
+
+.toolbar {
+
+```
+width: 100%;
+
+padding: 18px 24px;
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+flex-wrap: wrap;
+
+background: #ffffff;
+
+border-bottom: 1px solid #e5e7eb;
+```
+
 }
 
-.search-box input {
-    width: 100%;
+/* ============================================
+Toolbar Buttons
+============================================ */
 
-    border: none;
-    outline: none;
+#createFolderButton,
+#uploadButton,
+#homeButton {
 
-    background: transparent;
+```
+min-height: 42px;
 
-    padding: 13px;
+padding: 0 17px;
 
-    font-size: 15px;
+border-radius: 9px;
+
+font-size: 14px;
+
+font-weight: 600;
+```
+
 }
 
-.top-actions {
-    display: flex;
-    gap: 15px;
+#homeButton {
+
+```
+background: #f3f4f6;
+
+color: #374151;
+```
+
 }
 
-.top-actions button {
-    font-size: 20px;
+#homeButton:hover {
+
+```
+background: #e5e7eb;
+```
+
 }
 
+#createFolderButton {
 
-/* Layout */
+```
+background: #2563eb;
 
-.layout {
-    display: flex;
-    min-height: calc(100vh - 70px);
+color: #ffffff;
+```
+
 }
 
+#createFolderButton:hover {
 
-/* Sidebar */
+```
+background: #1d4ed8;
+```
 
-.sidebar {
-    width: 240px;
-
-    background: white;
-
-    border-left: 1px solid #ddd;
-
-    padding: 25px 15px;
 }
 
-.new-button {
-    background: white;
+#uploadButton {
 
-    border: 1px solid #ddd;
+```
+background: #16a34a;
 
-    border-radius: 15px;
+color: #ffffff;
+```
 
-    padding: 14px 25px;
-
-    font-size: 16px;
-
-    box-shadow: 0 2px 6px rgba(0,0,0,.1);
-
-    margin-bottom: 25px;
 }
 
-.new-button:hover {
-    background: #f1f3f4;
+#uploadButton:hover {
+
+```
+background: #15803d;
+```
+
 }
 
-.nav-item {
-    width: 100%;
+/* ============================================
+Search
+============================================ */
 
-    display: flex;
+#searchInput {
 
-    align-items: center;
+```
+min-width: 220px;
 
-    gap: 15px;
+flex: 1;
 
-    padding: 13px 18px;
+min-height: 42px;
 
-    border-radius: 10px;
+padding: 0 15px;
 
-    font-size: 15px;
+border: 1px solid #d1d5db;
 
-    text-align: right;
+border-radius: 9px;
 
-    margin-bottom: 5px;
+outline: none;
+
+background: #ffffff;
+
+color: #111827;
+
+font-size: 14px;
+```
+
 }
 
-.nav-item:hover,
-.nav-item.active {
-    background: #e8f0fe;
+#searchInput::placeholder {
+
+```
+color: #9ca3af;
+```
+
 }
 
+#searchInput:focus {
 
-/* Main */
+```
+border-color: #2563eb;
 
-.content {
-    flex: 1;
+box-shadow:
+    0 0 0 3px rgba(
+        37,
+        99,
+        235,
+        0.12
+    );
+```
 
-    padding: 30px;
-
-    overflow: hidden;
 }
 
-.content-header {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 30px;
-}
-
-.content-header h1 {
-    font-size: 27px;
-
-    margin-bottom: 8px;
-}
+/* ============================================
+Breadcrumb
+============================================ */
 
 .breadcrumb {
-    color: #777;
 
-    font-size: 14px;
+```
+width: 100%;
+
+padding: 15px 24px;
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+flex-wrap: wrap;
+
+background: #f9fafb;
+
+color: #6b7280;
+
+font-size: 14px;
+
+border-bottom: 1px solid #e5e7eb;
+```
+
 }
 
-.view-buttons {
-    display: flex;
-    gap: 5px;
+.breadcrumb button {
+
+```
+padding: 5px 8px;
+
+border-radius: 6px;
+
+background: transparent;
+
+color: #2563eb;
+
+font-size: 14px;
+```
+
 }
 
-.view-buttons button {
-    font-size: 20px;
+.breadcrumb button:hover {
 
-    padding: 8px;
+```
+background: #eff6ff;
+```
 
-    border-radius: 6px;
 }
 
-.view-buttons button:hover {
-    background: #eee;
+/* ============================================
+File Container
+============================================ */
+
+.file-container {
+
+```
+width: 100%;
+
+max-width: 1400px;
+
+margin: 0 auto;
+
+padding: 24px;
+
+display: grid;
+
+grid-template-columns:
+    repeat(
+        auto-fill,
+        minmax(180px, 1fr)
+    );
+
+gap: 16px;
+```
+
 }
 
+/* ============================================
+Folder Item
+============================================ */
 
-/* Sections */
+.folder-item {
 
-section {
-    margin-bottom: 35px;
+```
+min-height: 150px;
+
+padding: 20px;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+justify-content: center;
+
+gap: 12px;
+
+background: #ffffff;
+
+border: 1px solid #e5e7eb;
+
+border-radius: 12px;
+
+cursor: pointer;
+
+user-select: none;
+
+transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+```
+
 }
 
-section h2 {
-    font-size: 17px;
+.folder-item:hover {
 
-    margin-bottom: 15px;
-}
+```
+transform: translateY(-2px);
 
+border-color: #bfdbfe;
 
-/* Folders */
+box-shadow:
+    0 6px 18px rgba(
+        0,
+        0,
+        0,
+        0.08
+    );
+```
 
-.folder-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fill, minmax(190px, 1fr));
-
-    gap: 15px;
-}
-
-.folder {
-    background: white;
-
-    border: 1px solid #ddd;
-
-    border-radius: 10px;
-
-    padding: 18px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    transition: .15s;
-}
-
-.folder:hover {
-    background: #f1f3f4;
-
-    transform: translateY(-2px);
 }
 
 .folder-icon {
-    font-size: 30px;
+
+```
+font-size: 48px;
+
+line-height: 1;
+```
+
 }
 
 .folder-name {
-    font-size: 14px;
 
-    font-weight: bold;
+```
+width: 100%;
+
+text-align: center;
+
+overflow: hidden;
+
+text-overflow: ellipsis;
+
+white-space: nowrap;
+
+font-size: 15px;
+
+font-weight: 600;
+
+color: #374151;
+```
+
 }
 
+/* ============================================
+File Item
+============================================ */
 
-/* Files */
+.file-item {
 
-.file-grid {
-    display: grid;
+```
+min-height: 150px;
 
-    grid-template-columns:
-        repeat(auto-fill, minmax(190px, 1fr));
+padding: 20px;
 
-    gap: 15px;
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+justify-content: center;
+
+gap: 10px;
+
+background: #ffffff;
+
+border: 1px solid #e5e7eb;
+
+border-radius: 12px;
+
+cursor: pointer;
+
+transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+```
+
 }
 
-.file {
-    background: white;
+.file-item:hover {
 
-    border: 1px solid #ddd;
+```
+transform: translateY(-2px);
 
-    border-radius: 10px;
+border-color: #d1d5db;
 
-    padding: 20px;
+box-shadow:
+    0 6px 18px rgba(
+        0,
+        0,
+        0,
+        0.08
+    );
+```
 
-    min-height: 130px;
+}
 
-    display: flex;
+.file-icon {
+
+```
+font-size: 42px;
+
+line-height: 1;
+```
+
+}
+
+.file-name {
+
+```
+width: 100%;
+
+text-align: center;
+
+overflow: hidden;
+
+text-overflow: ellipsis;
+
+white-space: nowrap;
+
+font-size: 14px;
+
+font-weight: 600;
+
+color: #374151;
+```
+
+}
+
+.file-size {
+
+```
+font-size: 12px;
+
+color: #9ca3af;
+```
+
+}
+
+/* ============================================
+Empty Message
+============================================ */
+
+.empty-message {
+
+```
+grid-column: 1 / -1;
+
+padding: 60px 20px;
+
+text-align: center;
+
+color: #9ca3af;
+
+font-size: 15px;
+```
+
+}
+
+/* ============================================
+Loading Text
+============================================ */
+
+.file-container > p {
+
+```
+grid-column: 1 / -1;
+
+padding: 60px 20px;
+
+text-align: center;
+
+color: #9ca3af;
+
+font-size: 15px;
+```
+
+}
+
+/* ============================================
+Login Screen
+============================================ */
+
+.login-container {
+
+```
+min-height: 100vh;
+
+padding: 20px;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+background:
+    linear-gradient(
+        135deg,
+        #f8fafc,
+        #eef2ff
+    );
+```
+
+}
+
+.login-box {
+
+```
+width: 100%;
+
+max-width: 420px;
+
+padding: 40px 32px;
+
+text-align: center;
+
+background: #ffffff;
+
+border: 1px solid #e5e7eb;
+
+border-radius: 16px;
+
+box-shadow:
+    0 15px 40px rgba(
+        0,
+        0,
+        0,
+        0.08
+    );
+```
+
+}
+
+.login-box h1 {
+
+```
+margin-bottom: 12px;
+
+font-size: 28px;
+
+color: #1f2937;
+```
+
+}
+
+.login-box p {
+
+```
+margin-bottom: 28px;
+
+color: #6b7280;
+
+font-size: 15px;
+```
+
+}
+
+/* ============================================
+Google Login Button
+============================================ */
+
+#googleLoginButton {
+
+```
+width: 100%;
+
+min-height: 48px;
+
+padding: 0 20px;
+
+border-radius: 9px;
+
+background: #2563eb;
+
+color: #ffffff;
+
+font-size: 15px;
+
+font-weight: 600;
+```
+
+}
+
+#googleLoginButton:hover {
+
+```
+background: #1d4ed8;
+
+box-shadow:
+    0 5px 15px rgba(
+        37,
+        99,
+        235,
+        0.25
+    );
+```
+
+}
+
+/* ============================================
+File Input
+============================================ */
+
+#fileInput {
+
+```
+display: none;
+```
+
+}
+
+/* ============================================
+Selection
+============================================ */
+
+::selection {
+
+```
+background: #bfdbfe;
+
+color: #111827;
+```
+
+}
+
+/* ============================================
+Scrollbar
+============================================ */
+
+::-webkit-scrollbar {
+
+```
+width: 9px;
+
+height: 9px;
+```
+
+}
+
+::-webkit-scrollbar-track {
+
+```
+background: #f3f4f6;
+```
+
+}
+
+::-webkit-scrollbar-thumb {
+
+```
+background: #cbd5e1;
+
+border-radius: 10px;
+```
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+```
+background: #94a3b8;
+```
+
+}
+
+/* ============================================
+Mobile
+============================================ */
+
+@media (
+max-width: 700px
+) {
+
+```
+.app-header {
+
+    padding: 14px 16px;
+
+    align-items: flex-start;
 
     flex-direction: column;
+
+    gap: 12px;
+}
+
+
+.app-title h1 {
+
+    font-size: 20px;
+}
+
+
+.user-area {
+
+    width: 100%;
 
     justify-content: space-between;
 }
 
-.file:hover {
-    background: #f5f5f5;
-}
 
-.file-icon {
-    font-size: 35px;
-}
+#userName {
 
-.file-name {
-    font-size: 14px;
+    max-width: 60%;
 
-    word-break: break-word;
-}
-
-.file-size {
-    color: #777;
-
-    font-size: 12px;
+    font-size: 13px;
 }
 
 
-/* Modal */
+#logoutButton {
 
-.modal {
-    position: fixed;
+    padding: 8px 12px;
 
-    inset: 0;
-
-    background: rgba(0,0,0,.35);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
+    font-size: 13px;
 }
 
-.hidden {
-    display: none;
+
+.toolbar {
+
+    padding: 14px 16px;
+
+    gap: 8px;
 }
 
-.modal-content {
-    width: 350px;
 
-    background: white;
+#homeButton,
+#createFolderButton,
+#uploadButton {
 
-    border-radius: 15px;
+    flex: 1;
 
-    padding: 25px;
+    padding: 0 10px;
 
-    position: relative;
+    font-size: 13px;
 }
 
-.modal-content h2 {
-    margin-bottom: 20px;
-}
 
-.close-button {
-    position: absolute;
+#searchInput {
 
-    top: 10px;
-
-    left: 15px;
-
-    font-size: 25px;
-}
-
-.modal-option {
     width: 100%;
 
-    padding: 15px;
+    min-width: 100%;
 
-    text-align: right;
+    flex: none;
 
-    border-radius: 8px;
-
-    margin-bottom: 8px;
-
-    font-size: 15px;
-}
-
-.modal-option:hover {
-    background: #f1f3f4;
+    order: 10;
 }
 
 
-/* Mobile */
+.breadcrumb {
 
-@media (max-width: 700px) {
+    padding: 12px 16px;
 
-    .topbar {
-        padding: 0 15px;
+    font-size: 13px;
+}
 
-        gap: 10px;
-    }
 
-    .logo {
-        min-width: auto;
+.file-container {
 
-        font-size: 18px;
-    }
+    padding: 16px;
 
-    .top-actions {
-        display: none;
-    }
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
 
-    .sidebar {
-        width: 70px;
+    gap: 12px;
+}
 
-        padding: 15px 8px;
-    }
 
-    .new-button {
-        padding: 12px 5px;
+.folder-item,
+.file-item {
 
-        width: 100%;
+    min-height: 135px;
 
-        font-size: 0;
-    }
+    padding: 14px 10px;
+}
 
-    .new-button::after {
-        content: "＋";
 
-        font-size: 22px;
-    }
+.folder-icon {
 
-    .nav-item {
-        justify-content: center;
+    font-size: 40px;
+}
 
-        padding: 13px 5px;
-    }
 
-    .nav-item span {
-        display: none;
-    }
+.file-icon {
 
-    .content {
-        padding: 20px 15px;
-    }
+    font-size: 36px;
+}
 
-    .folder-grid,
-    .file-grid {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
+
+.folder-name,
+.file-name {
+
+    font-size: 13px;
+}
+
+
+.file-size {
+
+    font-size: 11px;
+}
+
+
+.login-box {
+
+    padding: 32px 22px;
+}
+
+
+.login-box h1 {
+
+    font-size: 24px;
+}
+```
+
+}
+
+/* ============================================
+Small Mobile
+============================================ */
+
+@media (
+max-width: 400px
+) {
+
+```
+.file-container {
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    padding: 12px;
+
+    gap: 10px;
+}
+
+
+#homeButton,
+#createFolderButton,
+#uploadButton {
+
+    font-size: 12px;
+
+    padding: 0 7px;
+}
+
+
+.folder-item,
+.file-item {
+
+    min-height: 125px;
+}
+```
 
 }
