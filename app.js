@@ -1,16 +1,11 @@
+// ============================================
+// My Cloud Storage - app.js
+// ============================================
+
+// Firebase
 import {
     initializeApp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    where,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 import {
     getAuth,
@@ -20,10 +15,20 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
-// =====================================================
+
+// ============================================
 // Firebase Configuration
-// =====================================================
+// ============================================
 
 const firebaseConfig = {
     apiKey: "AIzaSyDdQSIn79XHyD1rZy4sEatETdnbBlJBCKc",
@@ -35,129 +40,65 @@ const firebaseConfig = {
 };
 
 
-// =====================================================
+// ============================================
 // Initialize Firebase
-// =====================================================
+// ============================================
 
 const app = initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
-
 const auth = getAuth(app);
 
-const googleProvider =
-    new GoogleAuthProvider();
+const db = getFirestore(app);
+
+const provider = new GoogleAuthProvider();
 
 
-// =====================================================
-// DOM Elements
-// =====================================================
-
-const folderGrid =
-    document.getElementById("folderGrid");
-
-const fileGrid =
-    document.getElementById("fileGrid");
-
-const newButton =
-    document.getElementById("newButton");
-
-const newModal =
-    document.getElementById("newModal");
-
-const closeModal =
-    document.getElementById("closeModal");
-
-const createFolderButton =
-    document.getElementById("createFolderButton");
-
-const uploadButton =
-    document.getElementById("uploadButton");
-
-const fileInput =
-    document.getElementById("fileInput");
-
-const searchInput =
-    document.getElementById("searchInput");
-
-
-// =====================================================
-// Application State
-// =====================================================
-
-let currentFolderId = null;
+// ============================================
+// Global Variables
+// ============================================
 
 let currentUser = null;
 
+let currentFolderId = null;
 
-// =====================================================
-// Login UI
-// =====================================================
+let currentFolderName = "الرئيسية";
 
-function createLoginScreen() {
 
-    document.body.innerHTML = `
+// ============================================
+// DOM Elements
+// ============================================
 
-        <div style="
-            min-height:100vh;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background:#f8f9fa;
-            font-family:Arial,sans-serif;
-        ">
+const appContainer =
+    document.getElementById("app");
 
-            <div style="
-                width:360px;
-                max-width:90%;
-                background:white;
-                padding:35px;
-                border-radius:18px;
-                box-shadow:0 5px 30px rgba(0,0,0,.12);
-                text-align:center;
-            ">
 
-                <div style="
-                    font-size:55px;
-                    margin-bottom:15px;
-                ">
-                    ☁️
-                </div>
+// ============================================
+// Create Login Screen
+// ============================================
+
+function showLoginScreen() {
+
+    if (!appContainer) {
+        console.error("Element #app not found");
+        return;
+    }
+
+    appContainer.innerHTML = `
+        <div class="login-container">
+
+            <div class="login-box">
 
                 <h1>
-                    My Cloud
+                    My Cloud Storage
                 </h1>
 
-                <p style="
-                    color:#666;
-                    margin-bottom:25px;
-                ">
-                    سجّل الدخول للوصول إلى ملفاتك
+                <p>
+                    التخزين السحابي الخاص بك
                 </p>
 
-                <button
-                    id="googleLoginButton"
-                    style="
-                        width:100%;
-                        padding:13px;
-                        border:none;
-                        border-radius:10px;
-                        background:#4285f4;
-                        color:white;
-                        font-size:16px;
-                        cursor:pointer;
-                    "
-                >
-                    🔵 تسجيل الدخول بحساب Google
+                <button id="googleLoginButton">
+                    تسجيل الدخول باستخدام Google
                 </button>
-
-                <p
-                    id="loginError"
-                    style="
-                        color:#d93025;
-                        margin-top:15px;
-                    "
-                ></p>
 
             </div>
 
@@ -171,274 +112,397 @@ function createLoginScreen() {
         );
 
 
-    const loginError =
-        document.getElementById(
-            "loginError"
-        );
-
-
     googleLoginButton.addEventListener(
         "click",
-        async () => {
-
-            googleLoginButton.disabled =
-                true;
-
-            googleLoginButton.textContent =
-                "جاري تسجيل الدخول...";
-
-
-            loginError.textContent =
-                "";
-
-
-            try {
-
-                await signInWithPopup(
-                    auth,
-                    googleProvider
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Google login error:",
-                    error
-                );
-
-
-                loginError.textContent =
-                    "فشل تسجيل الدخول: " +
-                    error.message;
-
-
-                googleLoginButton.disabled =
-                    false;
-
-
-                googleLoginButton.textContent =
-                    "🔵 تسجيل الدخول بحساب Google";
-
-            }
-
-        }
+        loginWithGoogle
     );
-
 }
 
 
-// =====================================================
-// Initialize Application
-// =====================================================
+// ============================================
+// Google Login
+// ============================================
 
-async function init() {
-
-    if (!currentUser) {
-        return;
-    }
-
+async function loginWithGoogle() {
 
     try {
 
-        await loadFolders();
+        const result =
+            await signInWithPopup(
+                auth,
+                provider
+            );
 
-        await loadFiles();
+        const user =
+            result.user;
+
+        console.log(
+            "Logged in:",
+            user.displayName
+        );
+
+        console.log(
+            "Email:",
+            user.email
+        );
+
+        console.log(
+            "UID:",
+            user.uid
+        );
 
     } catch (error) {
 
         console.error(
-            "Initialization error:",
+            "Login error:",
             error
         );
 
         alert(
-            "حدث خطأ أثناء الاتصال بـ Firebase."
+            "حدث خطأ أثناء تسجيل الدخول:\n\n" +
+            error.message
         );
-
     }
-
 }
 
 
-// =====================================================
-// Load Folders
-// =====================================================
+// ============================================
+// Logout
+// ============================================
 
-async function loadFolders() {
-
-    folderGrid.innerHTML = "";
+async function logout() {
 
     try {
 
-        const foldersRef =
-            collection(
-                db,
-                "folders"
-            );
+        await signOut(auth);
 
+        currentUser = null;
 
-        let foldersQuery;
-
-
-        if (currentFolderId === null) {
-
-            foldersQuery =
-                query(
-                    foldersRef,
-                    where(
-                        "parentId",
-                        "==",
-                        null
-                    )
-                );
-
-        } else {
-
-            foldersQuery =
-                query(
-                    foldersRef,
-                    where(
-                        "parentId",
-                        "==",
-                        currentFolderId
-                    )
-                );
-
-        }
-
-
-        const snapshot =
-            await getDocs(
-                foldersQuery
-            );
-
-
-        if (snapshot.empty) {
-
-            folderGrid.innerHTML = `
-                <div class="empty-message">
-                    لا توجد مجلدات هنا
-                </div>
-            `;
-
-            return;
-        }
-
-
-        snapshot.forEach(
-            documentSnapshot => {
-
-                const folder =
-                    documentSnapshot.data();
-
-
-                createFolderElement(
-                    documentSnapshot.id,
-                    folder.name
-                );
-
-            }
-        );
-
+        currentFolderId = null;
 
     } catch (error) {
 
         console.error(
-            "Load folders error:",
+            "Logout error:",
             error
         );
 
-
-        folderGrid.innerHTML = `
-            <div class="empty-message">
-                تعذر تحميل المجلدات
-            </div>
-        `;
-
+        alert(
+            "حدث خطأ أثناء تسجيل الخروج"
+        );
     }
-
 }
 
 
-// =====================================================
-// Create Folder Element
-// =====================================================
+// ============================================
+// Main Application UI
+// ============================================
 
-function createFolderElement(
-    id,
-    name
-) {
+function showMainApp() {
 
-    const element =
-        document.createElement("div");
-
-
-    element.className =
-        "folder";
+    if (!appContainer) {
+        console.error("Element #app not found");
+        return;
+    }
 
 
-    element.innerHTML = `
+    appContainer.innerHTML = `
 
-        <div class="folder-icon">
-            📁
+        <div class="cloud-app">
+
+            <!-- Header -->
+
+            <header class="app-header">
+
+                <div class="app-title">
+
+                    <h1>
+                        My Cloud Storage
+                    </h1>
+
+                </div>
+
+
+                <div class="user-area">
+
+                    <span id="userName">
+                        ${escapeHtml(
+                            currentUser?.displayName ||
+                            "المستخدم"
+                        )}
+                    </span>
+
+                    <button id="logoutButton">
+                        تسجيل الخروج
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- Toolbar -->
+
+            <div class="toolbar">
+
+                <button id="homeButton">
+                    الرئيسية
+                </button>
+
+
+                <button id="createFolderButton">
+                    + مجلد جديد
+                </button>
+
+
+                <button id="uploadButton">
+                    ↑ رفع ملف
+                </button>
+
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    hidden
+                />
+
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="بحث..."
+                />
+
+            </div>
+
+
+            <!-- Breadcrumb -->
+
+            <div
+                id="breadcrumb"
+                class="breadcrumb"
+            >
+                الرئيسية
+            </div>
+
+
+            <!-- Content -->
+
+            <main
+                id="fileContainer"
+                class="file-container"
+            >
+
+                <p>
+                    جاري التحميل...
+                </p>
+
+            </main>
+
         </div>
-
-        <div class="folder-name">
-            ${escapeHtml(name)}
-        </div>
-
     `;
 
 
-    element.addEventListener(
-        "dblclick",
+    // ========================================
+    // Event Listeners
+    // ========================================
+
+    const logoutButton =
+        document.getElementById(
+            "logoutButton"
+        );
+
+
+    logoutButton.addEventListener(
+        "click",
+        logout
+    );
+
+
+    const homeButton =
+        document.getElementById(
+            "homeButton"
+        );
+
+
+    homeButton.addEventListener(
+        "click",
         async () => {
 
-            currentFolderId =
-                id;
+            currentFolderId = null;
 
+            currentFolderName =
+                "الرئيسية";
 
             await loadFolders();
 
             await loadFiles();
 
-
-            updateBreadcrumb(
-                name
-            );
+            updateBreadcrumb();
 
         }
     );
 
 
-    folderGrid.appendChild(
-        element
+    const createFolderButton =
+        document.getElementById(
+            "createFolderButton"
+        );
+
+
+    createFolderButton.addEventListener(
+        "click",
+        createFolder
     );
 
+
+    // ========================================
+    // Upload
+    // ========================================
+
+    const fileInput =
+        document.getElementById(
+            "fileInput"
+        );
+
+
+    const uploadButton =
+        document.getElementById(
+            "uploadButton"
+        );
+
+
+    if (uploadButton && fileInput) {
+
+        uploadButton.addEventListener(
+            "click",
+            () => {
+
+                if (!currentUser) {
+
+                    alert(
+                        "يجب تسجيل الدخول أولاً"
+                    );
+
+                    return;
+                }
+
+                fileInput.click();
+
+            }
+        );
+
+
+        fileInput.addEventListener(
+            "change",
+            async () => {
+
+                const file =
+                    fileInput.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+                await uploadFileToTelegram(
+                    file
+                );
+
+                fileInput.value = "";
+
+            }
+        );
+
+    }
+
+
+    // ========================================
+    // Search
+    // ========================================
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            async () => {
+
+                const searchText =
+                    searchInput.value
+                        .trim()
+                        .toLowerCase();
+
+
+                if (!searchText) {
+
+                    await loadFolders();
+
+                    await loadFiles();
+
+                    return;
+                }
+
+
+                await searchFiles(
+                    searchText
+                );
+
+            }
+        );
+
+    }
+
+
+    // ========================================
+    // Load Initial Data
+    // ========================================
+
+    loadFolders();
+
+    loadFiles();
+
+    updateBreadcrumb();
 }
 
 
-// =====================================================
-// Create Folder in Firestore
-// =====================================================
+// ============================================
+// Create Folder
+// ============================================
 
-async function createFolder(
-    name
-) {
-
-    if (!name) {
-        return;
-    }
-
+async function createFolder() {
 
     if (!currentUser) {
 
         alert(
-            "يجب تسجيل الدخول أولاً."
+            "يجب تسجيل الدخول أولاً"
         );
 
         return;
+    }
 
+
+    const folderName =
+        prompt(
+            "اكتب اسم المجلد:"
+        );
+
+
+    if (!folderName) {
+        return;
+    }
+
+
+    const cleanName =
+        folderName.trim();
+
+
+    if (!cleanName) {
+        return;
     }
 
 
@@ -451,16 +515,16 @@ async function createFolder(
             ),
             {
 
-                name: name,
+                name: cleanName,
 
                 parentId:
-                    currentFolderId,
-
-                createdAt:
-                    serverTimestamp(),
+                    currentFolderId || null,
 
                 ownerId:
-                    currentUser.uid
+                    currentUser.uid,
+
+                createdAt:
+                    new Date()
 
             }
         );
@@ -478,60 +542,241 @@ async function createFolder(
 
 
         alert(
-            "فشل إنشاء المجلد."
+            "حدث خطأ أثناء إنشاء المجلد:\n\n" +
+            error.message
         );
 
     }
-
 }
 
 
-// =====================================================
-// Load Files
-// =====================================================
+// ============================================
+// Load Folders
+// ============================================
 
-async function loadFiles() {
+async function loadFolders() {
 
-    fileGrid.innerHTML = "";
+    if (!currentUser) {
+        return;
+    }
+
+
+    const container =
+        document.getElementById(
+            "fileContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
 
 
     try {
 
-        const filesRef =
-            collection(
-                db,
-                "files"
+        const foldersQuery =
+            query(
+                collection(
+                    db,
+                    "folders"
+                ),
+
+                where(
+                    "ownerId",
+                    "==",
+                    currentUser.uid
+                ),
+
+                where(
+                    "parentId",
+                    "==",
+                    currentFolderId || null
+                ),
+
+                orderBy(
+                    "createdAt",
+                    "desc"
+                )
             );
 
 
-        let filesQuery;
+        const snapshot =
+            await getDocs(
+                foldersQuery
+            );
 
 
-        if (currentFolderId === null) {
+        // Remove existing folders
+        const oldFolders =
+            container.querySelectorAll(
+                ".folder-item"
+            );
 
-            filesQuery =
-                query(
-                    filesRef,
-                    where(
-                        "folderId",
-                        "==",
-                        null
-                    )
+
+        oldFolders.forEach(
+            item => item.remove()
+        );
+
+
+        // Add folders
+
+        snapshot.forEach(
+            docSnapshot => {
+
+                const folder =
+                    docSnapshot.data();
+
+
+                const folderElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                folderElement.className =
+                    "folder-item";
+
+
+                folderElement.dataset.id =
+                    docSnapshot.id;
+
+
+                folderElement.innerHTML = `
+
+                    <div class="folder-icon">
+                        📁
+                    </div>
+
+                    <div class="folder-name">
+                        ${escapeHtml(
+                            folder.name
+                        )}
+                    </div>
+
+                `;
+
+
+                folderElement.addEventListener(
+                    "dblclick",
+                    async () => {
+
+                        currentFolderId =
+                            docSnapshot.id;
+
+                        currentFolderName =
+                            folder.name;
+
+
+                        await loadFolders();
+
+                        await loadFiles();
+
+                        updateBreadcrumb();
+
+                    }
                 );
+
+
+                container.appendChild(
+                    folderElement
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Load folders error:",
+            error
+        );
+
+
+        // If Firestore needs an index,
+        // show a useful message.
+
+        if (
+            error.message &&
+            error.message.includes(
+                "index"
+            )
+        ) {
+
+            console.error(
+                "Firestore index required:",
+                error
+            );
 
         } else {
 
-            filesQuery =
-                query(
-                    filesRef,
-                    where(
-                        "folderId",
-                        "==",
-                        currentFolderId
-                    )
-                );
+            alert(
+                "حدث خطأ أثناء تحميل المجلدات:\n\n" +
+                error.message
+            );
 
         }
+
+    }
+}
+
+
+// ============================================
+// Load Files
+// ============================================
+
+async function loadFiles(
+    folderId = currentFolderId
+) {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const container =
+        document.getElementById(
+            "fileContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    try {
+
+        const filesQuery =
+            query(
+                collection(
+                    db,
+                    "files"
+                ),
+
+                where(
+                    "ownerId",
+                    "==",
+                    currentUser.uid
+                ),
+
+                where(
+                    "folderId",
+                    "==",
+                    folderId || null
+                ),
+
+                where(
+                    "deleted",
+                    "==",
+                    false
+                ),
+
+                orderBy(
+                    "createdAt",
+                    "desc"
+                )
+            );
 
 
         const snapshot =
@@ -540,28 +785,68 @@ async function loadFiles() {
             );
 
 
-        if (snapshot.empty) {
+        // Remove existing files
 
-            fileGrid.innerHTML = `
-                <div class="empty-message">
-                    لا توجد ملفات هنا
-                </div>
-            `;
+        const oldFiles =
+            container.querySelectorAll(
+                ".file-item"
+            );
 
-            return;
-        }
 
+        oldFiles.forEach(
+            item => item.remove()
+        );
+
+
+        // Add files
 
         snapshot.forEach(
-            documentSnapshot => {
+            docSnapshot => {
 
                 const file =
-                    documentSnapshot.data();
+                    docSnapshot.data();
 
 
-                createFileElement(
-                    documentSnapshot.id,
-                    file
+                const fileElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                fileElement.className =
+                    "file-item";
+
+
+                fileElement.dataset.id =
+                    docSnapshot.id;
+
+
+                fileElement.innerHTML = `
+
+                    <div class="file-icon">
+                        ${getFileIcon(
+                            file.mimeType,
+                            file.name
+                        )}
+                    </div>
+
+                    <div class="file-name">
+                        ${escapeHtml(
+                            file.name
+                        )}
+                    </div>
+
+                    <div class="file-size">
+                        ${formatFileSize(
+                            file.size
+                        )}
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    fileElement
                 );
 
             }
@@ -576,74 +861,450 @@ async function loadFiles() {
         );
 
 
-        fileGrid.innerHTML = `
-            <div class="empty-message">
-                تعذر تحميل الملفات
-            </div>
-        `;
+        if (
+            error.message &&
+            error.message.includes(
+                "index"
+            )
+        ) {
+
+            console.error(
+                "Firestore index required:",
+                error
+            );
+
+        } else {
+
+            alert(
+                "حدث خطأ أثناء تحميل الملفات:\n\n" +
+                error.message
+            );
+
+        }
 
     }
-
 }
 
 
-// =====================================================
-// Create File Element
-// =====================================================
+// ============================================
+// Upload File To Telegram
+// ============================================
 
-function createFileElement(
-    id,
+async function uploadFileToTelegram(
     file
 ) {
 
-    const element =
-        document.createElement("div");
+    if (!currentUser) {
+
+        alert(
+            "يجب تسجيل الدخول أولاً"
+        );
+
+        return;
+    }
 
 
-    element.className =
-        "file";
+    if (!file) {
+        return;
+    }
 
 
-    element.innerHTML = `
+    // Current Vercel limit
 
-        <div class="file-icon">
-            ${getFileIcon(
-                file.mimeType
-            )}
-        </div>
+    const MAX_SIZE =
+        4 * 1024 * 1024;
 
-        <div class="file-name">
+
+    if (file.size > MAX_SIZE) {
+
+        alert(
+            "الملف كبير جدًا.\n\n" +
+            "الحد الحالي هو 4 MB تقريبًا."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        console.log(
+            "Starting upload:",
+            file.name
+        );
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        const response =
+            await fetch(
+                "/api/telegram",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "Telegram API response:",
+            result
+        );
+
+
+        if (
+            !response.ok ||
+            !result.ok
+        ) {
+
+            throw new Error(
+                result.error ||
+                "Upload failed"
+            );
+
+        }
+
+
+        // ====================================
+        // Save Metadata To Firestore
+        // ====================================
+
+        const fileData = {
+
+            name:
+                result.file.name,
+
+            size:
+                result.file.size,
+
+            mimeType:
+                result.file.mimeType,
+
+            folderId:
+                currentFolderId || null,
+
+            telegramMessageId:
+                result.telegram.messageId,
+
+            telegramFileId:
+                result.telegram.fileId,
+
+            ownerId:
+                currentUser.uid,
+
+            deleted:
+                false,
+
+            createdAt:
+                new Date()
+
+        };
+
+
+        const fileRef =
+            await addDoc(
+                collection(
+                    db,
+                    "files"
+                ),
+                fileData
+            );
+
+
+        console.log(
+            "Firestore document created:",
+            fileRef.id
+        );
+
+
+        alert(
+            "تم رفع الملف بنجاح ✅\n\n" +
+            file.name
+        );
+
+
+        await loadFiles();
+
+
+    } catch (error) {
+
+        console.error(
+            "Upload error:",
+            error
+        );
+
+
+        alert(
+            "حدث خطأ أثناء رفع الملف:\n\n" +
+            error.message
+        );
+
+    }
+}
+
+
+// ============================================
+// Search Files
+// ============================================
+
+async function searchFiles(
+    searchText
+) {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const container =
+        document.getElementById(
+            "fileContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    try {
+
+        const filesQuery =
+            query(
+                collection(
+                    db,
+                    "files"
+                ),
+
+                where(
+                    "ownerId",
+                    "==",
+                    currentUser.uid
+                ),
+
+                where(
+                    "deleted",
+                    "==",
+                    false
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                filesQuery
+            );
+
+
+        container.innerHTML = "";
+
+
+        let found =
+            false;
+
+
+        snapshot.forEach(
+            docSnapshot => {
+
+                const file =
+                    docSnapshot.data();
+
+
+                const name =
+                    (
+                        file.name || ""
+                    ).toLowerCase();
+
+
+                if (
+                    name.includes(
+                        searchText
+                    )
+                ) {
+
+                    found = true;
+
+
+                    const fileElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    fileElement.className =
+                        "file-item";
+
+
+                    fileElement.dataset.id =
+                        docSnapshot.id;
+
+
+                    fileElement.innerHTML = `
+
+                        <div class="file-icon">
+                            ${getFileIcon(
+                                file.mimeType,
+                                file.name
+                            )}
+                        </div>
+
+                        <div class="file-name">
+                            ${escapeHtml(
+                                file.name
+                            )}
+                        </div>
+
+                        <div class="file-size">
+                            ${formatFileSize(
+                                file.size
+                            )}
+                        </div>
+
+                    `;
+
+
+                    container.appendChild(
+                        fileElement
+                    );
+
+                }
+
+            }
+        );
+
+
+        if (!found) {
+
+            container.innerHTML = `
+
+                <div class="empty-message">
+                    لا توجد ملفات مطابقة للبحث.
+                </div>
+
+            `;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Search error:",
+            error
+        );
+
+
+        alert(
+            "حدث خطأ أثناء البحث:\n\n" +
+            error.message
+        );
+
+    }
+}
+
+
+// ============================================
+// Breadcrumb
+// ============================================
+
+function updateBreadcrumb() {
+
+    const breadcrumb =
+        document.getElementById(
+            "breadcrumb"
+        );
+
+
+    if (!breadcrumb) {
+        return;
+    }
+
+
+    if (!currentFolderId) {
+
+        breadcrumb.innerHTML =
+            "الرئيسية";
+
+        return;
+    }
+
+
+    breadcrumb.innerHTML = `
+
+        <button id="breadcrumbHome">
+            الرئيسية
+        </button>
+
+        <span>
+            /
+        </span>
+
+        <span>
             ${escapeHtml(
-                file.name
+                currentFolderName
             )}
-        </div>
-
-        <div class="file-size">
-            ${formatBytes(
-                file.size
-            )}
-        </div>
+        </span>
 
     `;
 
 
-    fileGrid.appendChild(
-        element
-    );
+    const breadcrumbHome =
+        document.getElementById(
+            "breadcrumbHome"
+        );
 
+
+    if (breadcrumbHome) {
+
+        breadcrumbHome.addEventListener(
+            "click",
+            async () => {
+
+                currentFolderId =
+                    null;
+
+                currentFolderName =
+                    "الرئيسية";
+
+
+                await loadFolders();
+
+                await loadFiles();
+
+                updateBreadcrumb();
+
+            }
+        );
+
+    }
 }
 
 
-// =====================================================
+// ============================================
 // File Icon
-// =====================================================
+// ============================================
 
 function getFileIcon(
-    mimeType
+    mimeType,
+    fileName
 ) {
 
     if (!mimeType) {
+
         return "📄";
+
     }
 
 
@@ -681,8 +1342,9 @@ function getFileIcon(
 
 
     if (
-        mimeType ===
-        "application/pdf"
+        mimeType.includes(
+            "pdf"
+        )
     ) {
 
         return "📕";
@@ -699,43 +1361,62 @@ function getFileIcon(
         )
     ) {
 
-        return "📦";
+        return "🗜️";
+
+    }
+
+
+    const extension =
+        fileName
+            ?.split(".")
+            .pop()
+            ?.toLowerCase();
+
+
+    if (
+        extension === "doc" ||
+        extension === "docx"
+    ) {
+
+        return "📝";
 
     }
 
 
     if (
-        mimeType.includes(
-            "text"
-        )
+        extension === "xls" ||
+        extension === "xlsx"
     ) {
 
-        return "📄";
+        return "📊";
+
+    }
+
+
+    if (
+        extension === "ppt" ||
+        extension === "pptx"
+    ) {
+
+        return "📽️";
 
     }
 
 
     return "📄";
-
 }
 
 
-// =====================================================
+// ============================================
 // Format File Size
-// =====================================================
+// ============================================
 
-function formatBytes(
+function formatFileSize(
     bytes
 ) {
 
-    if (
-        bytes === undefined ||
-        bytes === null ||
-        bytes === 0
-    ) {
-
+    if (!bytes || bytes <= 0) {
         return "0 B";
-
     }
 
 
@@ -755,417 +1436,98 @@ function formatBytes(
         );
 
 
-    const safeIndex =
-        Math.min(
-            index,
-            units.length - 1
+    const size =
+        bytes /
+        Math.pow(
+            1024,
+            index
         );
 
 
     return (
-        bytes /
-        Math.pow(
-            1024,
-            safeIndex
-        )
-    ).toFixed(
-        safeIndex === 0
-            ? 0
-            : 1
-    )
-    + " "
-    + units[safeIndex];
-
+        size.toFixed(
+            index === 0 ? 0 : 2
+        ) +
+        " " +
+        units[index]
+    );
 }
 
 
-// =====================================================
+// ============================================
 // Escape HTML
-// =====================================================
+// ============================================
 
 function escapeHtml(
-    text
+    value
 ) {
 
-    return String(text)
+    if (
+        value === null ||
+        value === undefined
+    ) {
 
-        .replaceAll(
-            "&",
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(
+            /&/g,
             "&amp;"
         )
-
-        .replaceAll(
-            "<",
+        .replace(
+            /</g,
             "&lt;"
         )
-
-        .replaceAll(
-            ">",
+        .replace(
+            />/g,
             "&gt;"
         )
-
-        .replaceAll(
-            '"',
+        .replace(
+            /"/g,
             "&quot;"
         )
-
-        .replaceAll(
-            "'",
+        .replace(
+            /'/g,
             "&#039;"
         );
-
 }
 
 
-// =====================================================
-// Breadcrumb
-// =====================================================
-
-function updateBreadcrumb(
-    folderName
-) {
-
-    const breadcrumb =
-        document.querySelector(
-            ".breadcrumb"
-        );
-
-
-    if (!breadcrumb) {
-        return;
-    }
-
-
-    breadcrumb.textContent =
-        `My Cloud / ${folderName}`;
-
-}
-
-
-// =====================================================
-// Open New Modal
-// =====================================================
-
-newButton.addEventListener(
-    "click",
-    () => {
-
-        newModal.classList.remove(
-            "hidden"
-        );
-
-    }
-);
-
-
-// =====================================================
-// Close Modal
-// =====================================================
-
-closeModal.addEventListener(
-    "click",
-    () => {
-
-        newModal.classList.add(
-            "hidden"
-        );
-
-    }
-);
-
-
-// =====================================================
-// Close Modal Outside
-// =====================================================
-
-newModal.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target ===
-            newModal
-        ) {
-
-            newModal.classList.add(
-                "hidden"
-            );
-
-        }
-
-    }
-);
-
-
-// =====================================================
-// Create Folder Button
-// =====================================================
-
-createFolderButton.addEventListener(
-    "click",
-    async () => {
-
-        const name =
-            prompt(
-                "أدخل اسم المجلد:"
-            );
-
-
-        if (
-            !name ||
-            !name.trim()
-        ) {
-
-            return;
-
-        }
-
-
-        await createFolder(
-            name.trim()
-        );
-
-
-        newModal.classList.add(
-            "hidden"
-        );
-
-    }
-);
-
-
-// =====================================================
-// Upload Button
-// =====================================================
-
-uploadButton.addEventListener(
-    "click",
-    () => {
-
-        newModal.classList.add(
-            "hidden"
-        );
-
-
-        fileInput.click();
-
-    }
-);
-
-
-// =====================================================
-// File Selected
-// =====================================================
-
-fileInput.addEventListener(
-    "change",
-    async event => {
-
-        const selectedFile =
-            event.target.files[0];
-
-
-        if (!selectedFile) {
-            return;
-        }
-
-
-        console.log(
-            "Selected file:",
-            selectedFile
-        );
-
-
-        alert(
-            `تم اختيار الملف:\n\n` +
-            `${selectedFile.name}\n\n` +
-            `الحجم: ` +
-            `${formatBytes(
-                selectedFile.size
-            )}`
-        );
-
-
-        fileInput.value = "";
-
-    }
-);
-
-
-// =====================================================
-// Search
-// =====================================================
-
-searchInput.addEventListener(
-    "input",
-    () => {
-
-        const search =
-            searchInput.value
-                .toLowerCase()
-                .trim();
-
-
-        document
-            .querySelectorAll(
-                ".folder"
-            )
-            .forEach(
-                folder => {
-
-                    const name =
-                        folder
-                            .querySelector(
-                                ".folder-name"
-                            )
-                            .textContent
-                            .toLowerCase();
-
-
-                    folder.style.display =
-                        name.includes(
-                            search
-                        )
-                            ? "flex"
-                            : "none";
-
-                }
-            );
-
-
-        document
-            .querySelectorAll(
-                ".file"
-            )
-            .forEach(
-                file => {
-
-                    const name =
-                        file
-                            .querySelector(
-                                ".file-name"
-                            )
-                            .textContent
-                            .toLowerCase();
-
-
-                    file.style.display =
-                        name.includes(
-                            search
-                        )
-                            ? "flex"
-                            : "none";
-
-                }
-            );
-
-    }
-);
-
-
-// =====================================================
-// Home Button
-// =====================================================
-
-const homeButton =
-    document.querySelector(
-        ".nav-item.active"
-    );
-
-
-if (homeButton) {
-
-    homeButton.addEventListener(
-        "click",
-        async () => {
-
-            currentFolderId =
-                null;
-
-
-            await loadFolders();
-
-            await loadFiles();
-
-
-            const breadcrumb =
-                document.querySelector(
-                    ".breadcrumb"
-                );
-
-
-            if (breadcrumb) {
-
-                breadcrumb.textContent =
-                    "My Cloud";
-
-            }
-
-        }
-    );
-
-}
-
-
-// =====================================================
-// Logout Button
-// =====================================================
-
-document.addEventListener(
-    "click",
-    async event => {
-
-        if (
-            event.target.id ===
-            "logoutButton"
-        ) {
-
-            try {
-
-                await signOut(auth);
-
-            } catch (error) {
-
-                console.error(
-                    "Logout error:",
-                    error
-                );
-
-            }
-
-        }
-
-    }
-);
-
-
-// =====================================================
+// ============================================
 // Authentication State
-// =====================================================
+// ============================================
 
 onAuthStateChanged(
     auth,
-    async user => {
+    async (user) => {
 
         if (user) {
+
+            // User logged in
 
             currentUser =
                 user;
 
 
             console.log(
-                "Logged in user:"
+                "User authenticated"
             );
+
 
             console.log(
                 "Name:",
                 user.displayName
             );
 
+
             console.log(
                 "Email:",
                 user.email
             );
+
 
             console.log(
                 "UID:",
@@ -1173,15 +1535,33 @@ onAuthStateChanged(
             );
 
 
-            await init();
+            currentFolderId =
+                null;
+
+
+            currentFolderName =
+                "الرئيسية";
+
+
+            showMainApp();
 
         } else {
+
+            // User logged out
 
             currentUser =
                 null;
 
 
-            createLoginScreen();
+            currentFolderId =
+                null;
+
+
+            currentFolderName =
+                "الرئيسية";
+
+
+            showLoginScreen();
 
         }
 
