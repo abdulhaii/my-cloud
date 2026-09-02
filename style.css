@@ -20,7 +20,6 @@ min-height: 100%;
 body {
 min-height: 100vh;
 
-```
 font-family:
     Arial,
     "Segoe UI",
@@ -30,7 +29,6 @@ font-family:
 background: #f7f8fa;
 
 color: #202124;
-```
 
 }
 
@@ -57,7 +55,6 @@ Material Symbols
 font-family:
 "Material Symbols Rounded";
 
-```
 font-weight: normal;
 
 font-style: normal;
@@ -83,7 +80,6 @@ direction: ltr;
 
 -webkit-font-smoothing:
     antialiased;
-```
 
 }
 
@@ -105,7 +101,6 @@ Header
 
 .app-header {
 
-```
 min-height: 72px;
 
 width: 100%;
@@ -125,7 +120,6 @@ background: #ffffff;
 
 border-bottom:
     1px solid #e5e7eb;
-```
 
 }
 
@@ -135,7 +129,6 @@ Brand
 
 .brand {
 
-```
 display: flex;
 
 align-items: center;
@@ -143,13 +136,11 @@ align-items: center;
 gap: 12px;
 
 min-width: 0;
-```
 
 }
 
 .brand-icon {
 
-```
 width: 46px;
 
 height: 46px;
@@ -165,21 +156,17 @@ justify-content: center;
 background: #eef2ff;
 
 color: #4f46e5;
-```
 
 }
 
 .brand-icon .material-symbols-rounded {
 
-```
 font-size: 29px;
-```
 
 }
 
 .brand h1 {
 
-```
 font-size: 19px;
 
 font-weight: 700;
@@ -187,19 +174,16 @@ font-weight: 700;
 color: #202124;
 
 margin-bottom: 3px;
-```
 
 }
 
 .brand span {
 
-```
 display: block;
 
 font-size: 12px;
 
 color: #6b7280;
-```
 
 }
 
@@ -209,31 +193,26 @@ User Area
 
 .user-area {
 
-```
 display: flex;
 
 align-items: center;
 
 gap: 12px;
-```
 
 }
 
 .user-info {
 
-```
 display: flex;
 
 align-items: center;
 
 gap: 9px;
-```
 
 }
 
 .user-avatar {
 
-```
 width: 40px;
 
 height: 40px;
@@ -251,33 +230,27 @@ justify-content: center;
 background: #eef2ff;
 
 color: #4f46e5;
-```
 
 }
 
 .user-avatar img {
 
-```
 width: 100%;
 
 height: 100%;
 
 object-fit: cover;
-```
 
 }
 
 .user-avatar .material-symbols-rounded {
 
-```
 font-size: 23px;
-```
 
 }
 
 .user-text {
 
-```
 display: flex;
 
 flex-direction: column;
@@ -285,13 +258,11 @@ flex-direction: column;
 gap: 3px;
 
 min-width: 0;
-```
 
 }
 
 .user-text strong {
 
-```
 max-width: 180px;
 
 overflow: hidden;
@@ -303,13 +274,11 @@ white-space: nowrap;
 font-size: 13px;
 
 color: #374151;
-```
 
 }
 
 .user-text small {
 
-```
 max-width: 200px;
 
 overflow: hidden;
@@ -321,7 +290,6 @@ white-space: nowrap;
 font-size: 11px;
 
 color: #9ca3af;
-```
 
 }
 
@@ -331,7 +299,6 @@ Icon Button
 
 .icon-button {
 
-```
 width: 40px;
 
 height: 40px;
@@ -351,17 +318,14 @@ color: #4b5563;
 transition:
     background 0.2s ease,
     color 0.2s ease;
-```
 
 }
 
 .icon-button:hover {
 
-```
 background: #fee2e2;
 
 color: #dc2626;
-```
 
 }
 
@@ -371,7 +335,6 @@ Toolbar
 
 .toolbar {
 
-```
 width: 100%;
 
 padding:
@@ -389,19 +352,16 @@ background: #ffffff;
 
 border-bottom:
     1px solid #e5e7eb;
-```
 
 }
 
 .toolbar-main {
 
-```
 display: flex;
 
 align-items: center;
 
 gap: 8px;
-```
 
 }
 
@@ -411,7 +371,6 @@ Toolbar Buttons
 
 .toolbar-button {
 
-```
 min-height: 42px;
 
 padding:
@@ -435,39 +394,31 @@ transition:
     transform 0.1s ease,
     background 0.2s ease,
     box-shadow 0.2s ease;
-```
 
 }
 
 .toolbar-button:active {
 
-```
 transform: scale(0.97);
-```
 
 }
 
 .toolbar-button .material-symbols-rounded {
 
-```
 font-size: 21px;
-```
 
 }
 
 .toolbar-button.primary {
 
-```
 background: #4f46e5;
 
 color: #ffffff;
-```
 
 }
 
 .toolbar-button.primary:hover {
 
-```
 background: #4338ca;
 
 box-shadow:
@@ -478,23 +429,19 @@ box-shadow:
         229,
         0.2
     );
-```
 
 }
 
 .toolbar-button.success {
 
-```
 background: #16a34a;
 
 color: #ffffff;
-```
 
 }
 
 .toolbar-button.success:hover {
 
-```
 background: #15803d;
 
 box-shadow:
@@ -505,25 +452,20 @@ box-shadow:
         74,
         0.2
     );
-```
 
 }
 
 .toolbar-button.secondary {
 
-```
 background: #f3f4f6;
 
 color: #374151;
-```
 
 }
 
 .toolbar-button.secondary:hover {
 
-```
 background: #e5e7eb;
-```
 
 }
 
@@ -533,7 +475,6 @@ Search Box
 
 .search-box {
 
-```
 height: 42px;
 
 min-width: 240px;
@@ -561,13 +502,11 @@ background: #ffffff;
 transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
-```
 
 }
 
 .search-box:focus-within {
 
-```
 border-color: #6366f1;
 
 box-shadow:
@@ -578,24 +517,20 @@ box-shadow:
         241,
         0.1
     );
-```
 
 }
 
 .search-box >
 .material-symbols-rounded {
 
-```
 font-size: 21px;
 
 color: #9ca3af;
-```
 
 }
 
 .search-box input {
 
-```
 width: 100%;
 
 height: 100%;
@@ -609,21 +544,17 @@ background: transparent;
 color: #1f2937;
 
 font-size: 13px;
-```
 
 }
 
 .search-box input::placeholder {
 
-```
 color: #9ca3af;
-```
 
 }
 
 .clear-search {
 
-```
 width: 30px;
 
 height: 30px;
@@ -639,25 +570,20 @@ justify-content: center;
 background: transparent;
 
 color: #9ca3af;
-```
 
 }
 
 .clear-search:hover {
 
-```
 background: #f3f4f6;
 
 color: #374151;
-```
 
 }
 
 .clear-search .material-symbols-rounded {
 
-```
 font-size: 18px;
-```
 
 }
 
@@ -667,7 +593,6 @@ Breadcrumb
 
 .breadcrumb {
 
-```
 min-height: 52px;
 
 padding:
@@ -683,14 +608,12 @@ background: #fafafa;
 
 border-bottom:
     1px solid #eeeeee;
-```
 
 }
 
 .breadcrumb-item,
 .breadcrumb-current {
 
-```
 display: flex;
 
 align-items: center;
@@ -702,30 +625,24 @@ color: #374151;
 font-size: 13px;
 
 font-weight: 600;
-```
 
 }
 
 .breadcrumb-item .material-symbols-rounded,
 .breadcrumb-current .material-symbols-rounded {
 
-```
 font-size: 19px;
-```
 
 }
 
 .breadcrumb-item.active {
 
-```
 color: #4f46e5;
-```
 
 }
 
 .breadcrumb-button {
 
-```
 padding:
     6px 8px;
 
@@ -744,43 +661,34 @@ color: #4f46e5;
 font-size: 13px;
 
 font-weight: 600;
-```
 
 }
 
 .breadcrumb-button:hover {
 
-```
 background: #eef2ff;
-```
 
 }
 
 .breadcrumb-button .material-symbols-rounded {
 
-```
 font-size: 19px;
-```
 
 }
 
 .breadcrumb-separator {
 
-```
 display: flex;
 
 align-items: center;
 
 color: #9ca3af;
-```
 
 }
 
 .breadcrumb-separator .material-symbols-rounded {
 
-```
 font-size: 20px;
-```
 
 }
 
@@ -790,7 +698,6 @@ File Container
 
 .file-container {
 
-```
 width: 100%;
 
 max-width: 1500px;
@@ -808,7 +715,6 @@ grid-template-columns:
     );
 
 gap: 16px;
-```
 
 }
 
@@ -819,7 +725,6 @@ Folder / File Cards
 .folder-item,
 .file-item {
 
-```
 min-height: 170px;
 
 padding:
@@ -849,14 +754,12 @@ transition:
     box-shadow 0.18s ease,
     border-color 0.18s ease,
     background 0.18s ease;
-```
 
 }
 
 .folder-item:hover,
 .file-item:hover {
 
-```
 transform: translateY(-2px);
 
 border-color: #c7d2fe;
@@ -871,7 +774,6 @@ box-shadow:
         0,
         0.07
     );
-```
 
 }
 
@@ -881,7 +783,6 @@ Item Icons
 
 .item-icon {
 
-```
 width: 64px;
 
 height: 64px;
@@ -893,35 +794,28 @@ display: flex;
 align-items: center;
 
 justify-content: center;
-```
 
 }
 
 .item-icon .material-symbols-rounded {
 
-```
 font-size: 42px;
-```
 
 }
 
 .folder-icon {
 
-```
 background: #fff7d6;
 
 color: #eab308;
-```
 
 }
 
 .file-icon {
 
-```
 background: #eef2ff;
 
 color: #6366f1;
-```
 
 }
 
@@ -931,7 +825,6 @@ Item Text
 
 .item-name {
 
-```
 width: 100%;
 
 text-align: center;
@@ -947,17 +840,14 @@ font-size: 13px;
 font-weight: 600;
 
 color: #374151;
-```
 
 }
 
 .item-type {
 
-```
 font-size: 11px;
 
 color: #9ca3af;
-```
 
 }
 
@@ -967,7 +857,6 @@ Loading
 
 .loading-container {
 
-```
 grid-column: 1 / -1;
 
 min-height: 250px;
@@ -983,22 +872,18 @@ gap: 10px;
 color: #9ca3af;
 
 font-size: 14px;
-```
 
 }
 
 .loading-icon {
 
-```
 animation:
     spin 1s linear infinite;
-```
 
 }
 
 @keyframes spin {
 
-```
 from {
     transform: rotate(0deg);
 }
@@ -1006,7 +891,6 @@ from {
 to {
     transform: rotate(360deg);
 }
-```
 
 }
 
@@ -1016,7 +900,6 @@ Empty State
 
 .empty-state {
 
-```
 grid-column: 1 / -1;
 
 min-height: 300px;
@@ -1032,13 +915,11 @@ justify-content: center;
 text-align: center;
 
 color: #9ca3af;
-```
 
 }
 
 .empty-icon {
 
-```
 width: 78px;
 
 height: 78px;
@@ -1056,33 +937,27 @@ justify-content: center;
 background: #f3f4f6;
 
 color: #9ca3af;
-```
 
 }
 
 .empty-icon .material-symbols-rounded {
 
-```
 font-size: 43px;
-```
 
 }
 
 .empty-state h3 {
 
-```
 margin-bottom: 7px;
 
 color: #4b5563;
 
 font-size: 16px;
-```
 
 }
 
 .empty-state p {
 
-```
 max-width: 350px;
 
 line-height: 1.7;
@@ -1090,25 +965,20 @@ line-height: 1.7;
 font-size: 13px;
 
 color: #9ca3af;
-```
 
 }
 
 .error-state .empty-icon {
 
-```
 background: #fef2f2;
 
 color: #dc2626;
-```
 
 }
 
 .error-state h3 {
 
-```
 color: #dc2626;
-```
 
 }
 
@@ -1118,7 +988,6 @@ Login
 
 .login-container {
 
-```
 min-height: 100vh;
 
 padding: 20px;
@@ -1135,13 +1004,11 @@ background:
         #f8fafc,
         #eef2ff
     );
-```
 
 }
 
 .login-box {
 
-```
 width: 100%;
 
 max-width: 430px;
@@ -1166,13 +1033,11 @@ box-shadow:
         0,
         0.08
     );
-```
 
 }
 
 .login-logo {
 
-```
 width: 78px;
 
 height: 78px;
@@ -1191,21 +1056,17 @@ justify-content: center;
 background: #eef2ff;
 
 color: #4f46e5;
-```
 
 }
 
 .login-cloud-icon {
 
-```
 font-size: 47px !important;
-```
 
 }
 
 .login-box h1 {
 
-```
 margin-bottom: 10px;
 
 color: #1f2937;
@@ -1213,19 +1074,16 @@ color: #1f2937;
 font-size: 27px;
 
 font-weight: 700;
-```
 
 }
 
 .login-box p {
 
-```
 margin-bottom: 28px;
 
 color: #6b7280;
 
 font-size: 14px;
-```
 
 }
 
@@ -1235,7 +1093,6 @@ Google Login
 
 .google-login-button {
 
-```
 width: 100%;
 
 min-height: 50px;
@@ -1264,13 +1121,11 @@ font-weight: 600;
 transition:
     background 0.2s ease,
     box-shadow 0.2s ease;
-```
 
 }
 
 .google-login-button:hover {
 
-```
 background: #4338ca;
 
 box-shadow:
@@ -1281,15 +1136,12 @@ box-shadow:
         229,
         0.25
     );
-```
 
 }
 
 .google-login-button .material-symbols-rounded {
 
-```
 font-size: 22px;
-```
 
 }
 
@@ -1301,7 +1153,6 @@ Mobile
 max-width: 700px
 ) {
 
-```
 .app-header {
 
     padding:
@@ -1479,7 +1330,6 @@ max-width: 700px
 
     font-size: 23px;
 }
-```
 
 }
 
@@ -1491,7 +1341,6 @@ Very Small Screens
 max-width: 380px
 ) {
 
-```
 .toolbar-button span:not(
     .material-symbols-rounded
 ) {
@@ -1527,7 +1376,6 @@ max-width: 380px
 
     font-size: 31px;
 }
-```
 
 }
 
@@ -1537,11 +1385,9 @@ Selection
 
 ::selection {
 
-```
 background: #c7d2fe;
 
 color: #1f2937;
-```
 
 }
 
@@ -1551,36 +1397,28 @@ Scrollbar
 
 ::-webkit-scrollbar {
 
-```
 width: 8px;
 
 height: 8px;
-```
 
 }
 
 ::-webkit-scrollbar-track {
 
-```
 background: #f3f4f6;
-```
 
 }
 
 ::-webkit-scrollbar-thumb {
 
-```
 background: #cbd5e1;
 
 border-radius: 10px;
-```
 
 }
 
 ::-webkit-scrollbar-thumb:hover {
 
-```
 background: #94a3b8;
-```
 
 }
