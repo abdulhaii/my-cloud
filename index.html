@@ -1,170 +1,60 @@
-
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Cloud</title>
+```
+<meta charset="UTF-8">
 
-    <link rel="stylesheet" href="style.css">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    My Cloud Storage
+</title>
+
+<meta
+    name="description"
+    content="التخزين السحابي الخاص بك"
+>
+
+<meta
+    name="theme-color"
+    content="#ffffff"
+>
+
+<link
+    rel="stylesheet"
+    href="/style.css"
+>
+```
+
 </head>
 
 <body>
 
-    <header class="topbar">
+```
+<!--
+    التطبيق بالكامل سيتم وضعه هنا
+    بواسطة app.js
+-->
 
-        <div class="logo">
-            ☁️ My Cloud
-        </div>
-
-        <div class="search-box">
-            <span>🔍</span>
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="البحث في الملفات..."
-            >
-        </div>
-
-        <div class="top-actions">
-            <button title="الإعدادات">⚙️</button>
-            <button title="الحساب">👤</button>
-        </div>
-
-    </header>
+<div id="app"></div>
 
 
-    <div class="layout">
+<!--
+    Firebase + Application
+-->
 
-        <aside class="sidebar">
-
-            <button class="new-button" id="newButton">
-                ＋ جديد
-            </button>
-
-            <nav>
-
-                <button class="nav-item active">
-                    🏠
-                    <span>الرئيسية</span>
-                </button>
-
-                <button class="nav-item">
-                    ⭐
-                    <span>المفضلة</span>
-                </button>
-
-                <button class="nav-item">
-                    🗑️
-                    <span>سلة المهملات</span>
-                </button>
-
-            </nav>
-
-        </aside>
-
-
-        <main class="content">
-
-            <div class="content-header">
-
-                <div>
-                    <h1>ملفاتي</h1>
-
-                    <div class="breadcrumb">
-                        My Cloud
-                    </div>
-                </div>
-
-                <div class="view-buttons">
-
-                    <button id="gridViewButton">
-                        ▦
-                    </button>
-
-                    <button id="listViewButton">
-                        ☷
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <section>
-
-                <h2>المجلدات</h2>
-
-                <div
-                    class="folder-grid"
-                    id="folderGrid"
-                >
-                </div>
-
-            </section>
-
-
-            <section class="files-section">
-
-                <h2>الملفات</h2>
-
-                <div
-                    class="file-grid"
-                    id="fileGrid"
-                >
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
-
-
-    <div
-        class="modal hidden"
-        id="newModal"
-    >
-
-        <div class="modal-content">
-
-            <button
-                class="close-button"
-                id="closeModal"
-            >
-                ×
-            </button>
-
-            <h2>إنشاء جديد</h2>
-
-            <button
-                class="modal-option"
-                id="createFolderButton"
-            >
-                📁 إنشاء مجلد
-            </button>
-
-            <button
-                class="modal-option"
-                id="uploadButton"
-            >
-                📤 رفع ملف
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <input
-        type="file"
-        id="fileInput"
-        hidden
-    >
-
-
-   <script type="module" src="app.js"></script>
+<script
+    type="module"
+    src="/app.js"
+></script>
+```
 
 </body>
+
 </html>
